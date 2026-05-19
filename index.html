@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)file:///C:/Users/ASP/Downloads/index_1.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FabTools — Production Automation Toolkit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/">
+  <link href="./index_files/css2" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #185FA5;
+      --blue-light: #378ADD;
+      --blue-bg:    #E6F1FB;
+      --blue-dark:  #0C447C;
+      --gray-50:    #F8F9FC;
+      --gray-100:   #EFF1F5;
+      --gray-200:   #DDE1EA;
+      --gray-400:   #8E96A8;
+      --gray-700:   #3C4255;
+      --gray-900:   #1A1F2E;
+      --green:      #1D9E75;
+      --green-bg:   #EAF7F2;
+      --amber:      #D97706;
+      --amber-bg:   #FEF3C7;
+      --white:      #FFFFFF;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:  0 4px 16px rgba(0,0,0,0.10);
+      --radius:     8px;
+      --radius-lg:  12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+      font-size: 16px;
+      color: var(--gray-900);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ───────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 40px;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 18px; color: var(--gray-900);
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 32px; height: 32px; background: var(--blue);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--gray-400); font-weight: 500; }
+    .nav-links a:hover { color: var(--gray-900); text-decoration: none; }
+    .nav-cta {
+      background: var(--blue); color: var(--white) !important;
+      padding: 8px 18px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600;
+    }
+    .nav-cta:hover { background: var(--blue-dark); text-decoration: none !important; }
+
+    /* ── HERO ──────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 55%, var(--blue-light) 100%);
+      padding: 72px 40px 64px;
+      color: var(--white);
+    }
+    .hero-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+      padding: 4px 12px; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 42px; font-weight: 700; line-height: 1.15;
+      margin-bottom: 16px; letter-spacing: -0.5px;
+    }
+    .hero-sub {
+      font-size: 17px; color: rgba(255,255,255,0.8);
+      line-height: 1.7; margin-bottom: 28px; max-width: 440px;
+    }
+    .hero-steps {
+      display: flex; gap: 0; margin-bottom: 32px;
+    }
+    .hero-step {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.95);
+    }
+    .hero-step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .hero-arrow { margin: 0 10px; color: rgba(255,255,255,0.4); font-size: 18px; }
+    .hero-cta-group { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--white); color: var(--blue);
+      padding: 13px 28px; border-radius: var(--radius);
+      font-size: 16px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); text-decoration: none; color: var(--blue-dark); }
+    .btn-secondary {
+      color: rgba(255,255,255,0.85);
+      font-size: 14px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-secondary:hover { color: #fff; text-decoration: none; }
+
+    /* TRUST BADGE in hero */
+    .trust-badge {
+      margin-top: 24px;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      font-size: 13px; color: rgba(255,255,255,0.85);
+    }
+    .trust-badge svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.7); fill: none; flex-shrink: 0; }
+
+    /* HERO RIGHT — output preview */
+    .hero-output-panel {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    .output-panel-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.5);
+      margin-bottom: 16px;
+    }
+    .output-file {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .output-file:last-child { margin-bottom: 0; }
+    .output-icon {
+      width: 36px; height: 36px; background: rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .output-name {
+      font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 3px;
+    }
+    .output-desc {
+      font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4;
+    }
+    .output-sheets {
+      display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;
+    }
+    .output-sheet {
+      font-size: 10px; font-family: 'Source Code Pro', monospace;
+      background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75);
+      padding: 2px 7px; border-radius: 3px;
+    }
+
+    /* ── SECTION SHARED ────────────────────────────── */
+    .section { padding: 72px 40px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 30px; font-weight: 700; line-height: 1.2;
+      margin-bottom: 14px; color: var(--gray-900);
+    }
+    .section-sub {
+      font-size: 16px; color: var(--gray-400); max-width: 560px; line-height: 1.7;
+    }
+    .section-header { margin-bottom: 48px; }
+
+    /* ── HOW IT WORKS ──────────────────────────────── */
+    .how-bg { background: var(--gray-50); }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .step {
+      padding: 32px 28px;
+      border-right: 1px solid var(--gray-200);
+      position: relative;
+    }
+    .step:last-child { border-right: none; }
+    .step-num {
+      font-size: 11px; font-weight: 600; color: var(--blue);
+      letter-spacing: 1px; margin-bottom: 14px;
+      font-family: 'Source Code Pro', monospace;
+    }
+    .step-icon { font-size: 28px; margin-bottom: 12px; }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--gray-400); line-height: 1.6; }
+    .step-note {
+      margin-top: 10px;
+      font-size: 12px; color: var(--blue);
+      background: var(--blue-bg); border-radius: 4px;
+      padding: 6px 10px; line-height: 1.5;
+    }
+    .step-connector {
+      position: absolute; top: 36px; right: -14px;
+      width: 28px; height: 28px; background: var(--white);
+      border: 1px solid var(--gray-200); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--gray-400); z-index: 1;
+    }
+    .step:last-child .step-connector { display: none; }
+
+    /* ── TOOL CARD ─────────────────────────────────── */
+    .tools-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .tool-card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .tool-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .tool-card.active { border-color: var(--blue); border-width: 2px; }
+    .tool-card-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .tool-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .tool-icon { font-size: 28px; }
+    .status-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 4px; letter-spacing: 0.5px;
+    }
+    .status-live { background: #DCFCE7; color: #166534; }
+    .status-soon { background: var(--gray-100); color: var(--gray-400); }
+    .tool-card-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .tool-card-desc { font-size: 13px; color: var(--gray-400); line-height: 1.6; }
+    .tool-card-body { padding: 16px 22px; }
+    .outputs-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px;
+    }
+    .mini-output {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+      font-size: 13px;
+    }
+    .mini-output:last-child { border-bottom: none; }
+    .mini-output-icon { font-size: 16px; }
+    .mini-output-name { font-weight: 600; color: var(--gray-700); }
+    .mini-output-sheets { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+    .tool-card-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--gray-100);
+      background: var(--gray-50);
+    }
+    .btn-tool {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--blue); color: var(--white);
+      padding: 10px 20px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-tool:hover { background: var(--blue-dark); text-decoration: none; color: var(--white); }
+    .btn-tool-disabled {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--gray-100); color: var(--gray-400);
+      padding: 10px 20px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600; cursor: default;
+    }
+
+    /* ── SAMPLES ───────────────────────────────────── */
+    .samples-bg { background: var(--blue-bg); }
+    .samples-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .sample-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .sample-icon { font-size: 40px; flex-shrink: 0; }
+    .sample-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+    .sample-desc { font-size: 13px; color: var(--gray-400); line-height: 1.5; margin-bottom: 14px; }
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1.5px solid var(--blue); color: var(--blue);
+      padding: 8px 18px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-download:hover { background: var(--blue-bg); text-decoration: none; }
+
+    /* ── FAQ / TRUST SECTION ───────────────────────── */
+    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .faq-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+    }
+    .faq-q { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+    .faq-icon { font-size: 20px; }
+    .faq-a { font-size: 14px; color: var(--gray-400); line-height: 1.65; }
+    .faq-a strong { color: var(--gray-700); }
+
+    /* ── FOOTER ────────────────────────────────────── */
+    .footer {
+      background: var(--gray-900); color: rgba(255,255,255,0.5);
+      padding: 40px 40px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo { font-weight: 700; font-size: 16px; color: var(--white); display: flex; align-items: center; gap: 8px; }
+    .footer-links { display: flex; gap: 24px; font-size: 13px; }
+    .footer-links a { color: rgba(255,255,255,0.4); }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .footer-copy { font-size: 12px; }
+
+    /* ── RESPONSIVE ────────────────────────────────── */
+    @media (max-width: 860px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-output-panel { display: none; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--gray-200); }
+      .step-connector { display: none; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .samples-grid, .faq-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+      .nav-links { display: none; }
+      .hero { padding: 48px 20px; }
+      .section { padding: 48px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="file:///C:/Users/ASP/Downloads/index_1.html#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+      </div>
+      FabTools
+    </a>
+    <div class="nav-links">
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#tools">Tools</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#how">How it works</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#samples">Sample files</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#faq">FAQ</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#tools" class="nav-cta">Open BOM Tool →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Production Automation Toolkit</div>
+      <h1>From BOM to Production Schedule — automatically.</h1>
+      <p class="hero-sub">Upload your Excel files, select your LOG sheets, and download ready-to-use reports in seconds. No software to install.</p>
+
+      <div class="hero-steps">
+        <div class="hero-step">
+          <div class="hero-step-num">1</div>
+          Upload
+        </div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-step">
+          <div class="hero-step-num">2</div>
+          Select
+        </div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-step">
+          <div class="hero-step-num">3</div>
+          Download
+        </div>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="file:///C:/Users/ASP/Downloads/index_1.html#tools" class="btn-primary">
+          <span>⚙️</span> Open BOM Tool
+        </a>
+        <a href="file:///C:/Users/ASP/Downloads/index_1.html#samples" class="btn-secondary">
+          Download sample files ↓
+        </a>
+      </div>
+
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        Your files are processed in-browser and never stored on any server.
+      </div>
+    </div>
+
+    <!-- RIGHT: output preview -->
+    <div class="hero-output-panel">
+      <div class="output-panel-label">What you get — 2 Excel files</div>
+
+      <div class="output-file">
+        <div class="output-icon">📊</div>
+        <div>
+          <div class="output-name">Combined BOM.xlsx</div>
+          <div class="output-desc">All parts across every BOM sheet in one summary workbook.</div>
+          <div class="output-sheets">
+            <span class="output-sheet">Units</span>
+            <span class="output-sheet">Parts</span>
+            <span class="output-sheet">Summary All</span>
+            <span class="output-sheet">Checks</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="output-file">
+        <div class="output-icon">📅</div>
+        <div>
+          <div class="output-name">Production Schedule.xlsx</div>
+          <div class="output-desc">Per-unit schedule with matched quantities, drawing codes, and error report.</div>
+          <div class="output-sheets">
+            <span class="output-sheet">Schedule (per unit)</span>
+            <span class="output-sheet">Drawing Codes</span>
+            <span class="output-sheet">Missing parts</span>
+            <span class="output-sheet">Report</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-bg" id="how">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">How it works</div>
+      <div class="section-title">Four steps, two files, done.</div>
+      <div class="section-sub">No training required. If you can open Excel, you can use FabTools.</div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">STEP 01</div>
+        <div class="step-icon">📂</div>
+        <div class="step-title">Upload your files</div>
+        <div class="step-desc">Select your BOM file and your LOG file — both are standard Excel files (.xlsx or .xlsm) that you already use in your workflow.</div>
+        <div class="step-note">💡 BOM = your Bill of Materials spreadsheet.<br>LOG = your production tracking sheet with part codes.</div>
+        <div class="step-connector">→</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">STEP 02</div>
+        <div class="step-icon">☑️</div>
+        <div class="step-title">Choose LOG sheets</div>
+        <div class="step-desc">Your LOG file may contain multiple sheets — one per production unit (e.g. U-1000, U-2000). Select only the units you want to schedule.</div>
+        <div class="step-note">💡 You'll see the sheet names from your file. Tick the ones you need — you can select all or just one.</div>
+        <div class="step-connector">→</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">STEP 03</div>
+        <div class="step-icon">⚡</div>
+        <div class="step-title">Run</div>
+        <div class="step-desc">Click Run. The tool matches part codes from your BOM against your LOG, calculates quantities, and builds your reports automatically.</div>
+        <div class="step-note">💡 Takes a few seconds. Any mismatches or missing codes are flagged in a separate Checks sheet.</div>
+        <div class="step-connector">→</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">STEP 04</div>
+        <div class="step-icon">📥</div>
+        <div class="step-title">Download reports</div>
+        <div class="step-desc">Download your Combined BOM and Production Schedule as Excel files. Open them directly in Excel — no special software needed.</div>
+        <div class="step-note">💡 Files are formatted and ready to use: headers styled, columns auto-fitted, filters applied.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="section" id="tools">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">Available tools</div>
+      <div class="section-title">Pick a tool and get started.</div>
+      <div class="section-sub">Each tool is a standalone web app — no account or installation required.</div>
+    </div>
+
+    <div class="tools-grid">
+      <!-- TOOL 1: LIVE -->
+      <div class="tool-card active">
+        <div class="tool-card-header">
+          <div class="tool-card-top">
+            <div class="tool-icon">⚙️</div>
+            <span class="status-badge status-live">● Live</span>
+          </div>
+          <div class="tool-card-name">BOM Production Automation</div>
+          <div class="tool-card-desc">Match your Bill of Materials against production LOG files and generate Combined BOM and Production Schedule reports automatically.</div>
+        </div>
+
+        <div class="tool-card-body">
+          <div class="outputs-label">Output files you receive</div>
+
+          <div class="mini-output">
+            <div class="mini-output-icon">📊</div>
+            <div>
+              <div class="mini-output-name">Combined BOM.xlsx</div>
+              <div class="mini-output-sheets">Units · Parts · Summary All · Checks</div>
+            </div>
+          </div>
+
+          <div class="mini-output">
+            <div class="mini-output-icon">📅</div>
+            <div>
+              <div class="mini-output-name">Production Schedule.xlsx</div>
+              <div class="mini-output-sheets">Schedule per unit · Drawing Codes · Missing parts · Report</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card-footer">
+          <a href="https://your-streamlit-app-url.streamlit.app/" class="btn-tool" target="_blank">
+            Open tool →
+          </a>
+        </div>
+      </div>
+
+      <!-- TOOL 2: COMING SOON -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-card-top">
+            <div class="tool-icon">📋</div>
+            <span class="status-badge status-soon">Coming soon</span>
+          </div>
+          <div class="tool-card-name">Tool 2</div>
+          <div class="tool-card-desc">Next automation tool in development. Stay tuned for updates.</div>
+        </div>
+        <div class="tool-card-body"></div>
+        <div class="tool-card-footer">
+          <span class="btn-tool-disabled">Coming soon</span>
+        </div>
+      </div>
+
+      <!-- TOOL 3: COMING SOON -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-card-top">
+            <div class="tool-icon">🔧</div>
+            <span class="status-badge status-soon">Coming soon</span>
+          </div>
+          <div class="tool-card-name">Tool 3</div>
+          <div class="tool-card-desc">Another production utility currently in development.</div>
+        </div>
+        <div class="tool-card-body"></div>
+        <div class="tool-card-footer">
+          <span class="btn-tool-disabled">Coming soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAMPLE FILES -->
+<section class="section samples-bg" id="samples">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">Sample files</div>
+      <div class="section-title">Not sure how to start? Download examples.</div>
+      <div class="section-sub">Use these sample files to try the tool before using your own data.</div>
+    </div>
+
+    <div class="samples-grid">
+      <div class="sample-card">
+        <div class="sample-icon">📗</div>
+        <div>
+          <div class="sample-title">Sample BOM File</div>
+          <div class="sample-desc">A multi-sheet Excel BOM with example part codes, descriptions, and quantities. Each sheet represents one assembly unit.</div>
+          <a href="file:///C:/Users/ASP/Downloads/sample-bom.xlsx" class="btn-download" download="">
+            ⬇ Download BOM sample (.xlsx)
+          </a>
+        </div>
+      </div>
+
+      <div class="sample-card">
+        <div class="sample-icon">📘</div>
+        <div>
+          <div class="sample-title">Sample LOG File</div>
+          <div class="sample-desc">A multi-sheet Excel LOG file with example production tracking data. Each sheet is one production unit (U-1000, U-2000, etc.).</div>
+          <a href="file:///C:/Users/ASP/Downloads/sample-log.xlsx" class="btn-download" download="">
+            ⬇ Download LOG sample (.xlsx)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ / TRUST -->
+<section class="section" id="faq">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">FAQ</div>
+      <div class="section-title">Questions you might have.</div>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">🔒</span> Are my files safe?</div>
+        <div class="faq-a">
+          <strong>Yes.</strong> Your files are processed directly in your browser (or on a temporary server session) and are <strong>never stored, logged, or shared</strong>. Once you close the tab, everything is gone. We never see your data.
+        </div>
+      </div>
+
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">📄</span> What is a LOG file?</div>
+        <div class="faq-a">
+          The LOG file is a standard <strong>Excel spreadsheet (.xlsx)</strong> — your production tracking sheet that contains part codes organized by unit. Each sheet tab in the file typically represents one production unit (e.g. U-1000). It is <strong>not</strong> a system log or text file.
+        </div>
+      </div>
+
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">📊</span> What format must my files be in?</div>
+        <div class="faq-a">
+          Both the BOM and LOG files must be <strong>Excel format</strong> (.xlsx or .xlsm). The tool expects part codes in column A, starting from row 3. Download the sample files above to see the exact expected layout.
+        </div>
+      </div>
+
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">⚙️</span> Do I need to install anything?</div>
+        <div class="faq-a">
+          <strong>Nothing at all.</strong> FabTools runs entirely in your web browser. No software installation, no account creation, no license required. Just open the tool and upload your files.
+        </div>
+      </div>
+
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">🔢</span> What if some part codes don't match?</div>
+        <div class="faq-a">
+          The tool automatically generates a <strong>Checks sheet</strong> and a <strong>Missing parts sheet</strong> in your output files, listing every code that exists in your BOM but wasn't found in the LOG, and vice versa. Nothing gets silently dropped.
+        </div>
+      </div>
+
+      <div class="faq-card">
+        <div class="faq-q"><span class="faq-icon">💸</span> Is it free?</div>
+        <div class="faq-a">
+          <strong>Yes, completely free.</strong> FabTools is a personal project. All tools are free to use with no usage limits, no subscription, and no hidden costs.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div style="width:24px;height:24px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      FabTools
+    </div>
+    <div class="footer-links">
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#tools">Tools</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#how">How it works</a>
+      <a href="file:///C:/Users/ASP/Downloads/index_1.html#samples">Samples</a>
+      <a href="https://github.com/YOUR_USERNAME/bom-production-automation" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-copy">Built with Python &amp; Streamlit · 2026</div>
+  </div>
+</footer>
+
+
+
+HTMLEOF</body></html>
