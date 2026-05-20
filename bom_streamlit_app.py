@@ -304,6 +304,38 @@ def create_production_schedule_header(ws, last_filled_col: int) -> None:
             c.alignment = Alignment(horizontal="center", vertical="center")
 
     apply_schedule_row_heights(ws)
+    # logo is inserted separately when logo_bytes is available
+
+def try_insert_logo(ws, logo_bytes: Optional[bytes]) -> None:
+    """Insert logo into cell A1 of the worksheet, scaled to fit rows 1–3."""
+    if not logo_bytes:
+        return
+    try:
+        from PIL import Image as PILImage
+        from openpyxl.drawing.image import Image as XLImage
+        import tempfile, os
+
+        # Save logo bytes to a temp file (openpyxl needs a file path)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
+            tmp.write(logo_bytes)
+            tmp_path = tmp.name
+
+        pil_img = PILImage.open(tmp_path)
+        original_width, original_height = pil_img.size
+
+        # Scale to fit rows 1-3 (each row = 20pt, 1pt ≈ 1.333px)
+        target_height = int(20 * 3 * 1.333)
+        scale = target_height / original_height
+        target_width = int(original_width * scale)
+
+        xl_img = XLImage(tmp_path)
+        xl_img.width = target_width
+        xl_img.height = target_height
+        ws.add_image(xl_img, "A1")
+
+        os.unlink(tmp_path)
+    except Exception as e:
+        pass  # Logo insert is optional — never break the report
 
 # ─── BOM ────────────────────────────────────────────────────
 
@@ -466,7 +498,7 @@ def read_log_sheet(log_bytes: bytes, sheet_name: str):
 
     return rows, headers, code_to_index, warnings, valid_columns
 
-def create_schedule_sheet_from_log(out_wb, log_bytes, log_sheet_name, summary, descriptions, existing_titles):
+def create_schedule_sheet_from_log(out_wb, log_bytes, log_sheet_name, summary, descriptions, existing_titles, logo_bytes=None):
     log_rows, headers, code_to_index, log_warnings, valid_columns = read_log_sheet(log_bytes, log_sheet_name)
     log_codes = set(code_to_index.keys())
     total_matched_qty = 0
@@ -517,6 +549,7 @@ def create_schedule_sheet_from_log(out_wb, log_bytes, log_sheet_name, summary, d
             c.border = Border(top=Side(style="thin"), bottom=Side(style="double"))
 
     apply_schedule_row_heights(ws)
+    try_insert_logo(ws, logo_bytes)
 
     return {
         "log_sheet": log_sheet_name,
@@ -561,7 +594,7 @@ def create_drawing_codes_sheet(wb, reports, summary, descriptions):
     apply_number_format(ws)
     auto_width(ws, max_width=80)
 
-def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, descriptions) -> bytes:
+def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, descriptions, logo_bytes=None) -> bytes:
     wb = Workbook()
     report_ws = wb.active
     report_ws.title = "Report"
@@ -569,7 +602,7 @@ def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, de
     reports = []
 
     for sheet_name in selected_log_sheets:
-        reports.append(create_schedule_sheet_from_log(wb, log_bytes, sheet_name, summary, descriptions, existing_titles))
+        reports.append(create_schedule_sheet_from_log(wb, log_bytes, sheet_name, summary, descriptions, existing_titles, logo_bytes=logo_bytes))
 
     create_drawing_codes_sheet(wb, reports, summary, descriptions)
     existing_titles.add("Drawing Codes")
@@ -679,6 +712,44 @@ st.markdown("""
 """, unsafe_allow_html=True)
 log_file = st.file_uploader("LOG file (.xlsx / .xlsm)", type=["xlsx", "xlsm"], label_visibility="collapsed")
 
+# ── LOGO ─────────────────────────────────────────────────────
+st.markdown('<div class="section-header">Company Logo (optional)</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="info-box">
+  The logo will appear in the top-left corner (cells A1–A3) of every Production Schedule sheet.
+  If you skip this, no logo will be inserted.
+</div>
+""", unsafe_allow_html=True)
+
+col_logo1, col_logo2 = st.columns([2, 1])
+
+with col_logo1:
+    logo_file = st.file_uploader(
+        "Upload your logo (.png / .jpg)",
+        type=["png", "jpg", "jpeg"],
+        label_visibility="collapsed",
+        help="Recommended: PNG with transparent background. Will be scaled to ~80px height."
+    )
+
+# Load default logo from repo if it exists and user didn't upload one
+import os
+logo_bytes = None
+default_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Logo.png")
+
+if logo_file is not None:
+    logo_bytes = logo_file.read()
+    with col_logo2:
+        st.image(logo_bytes, caption="Your logo", width=120)
+elif os.path.exists(default_logo_path):
+    with open(default_logo_path, "rb") as f:
+        logo_bytes = f.read()
+    with col_logo2:
+        st.image(logo_bytes, caption="Default logo (from repo)", width=120)
+else:
+    with col_logo2:
+        st.caption("No logo — reports will have no logo in header.")
+
 # ── STEP 2: Select LOG sheets ────────────────────────────────
 if log_file:
     st.markdown('<div class="section-header">Step 2 — Select LOG sheets</div>', unsafe_allow_html=True)
@@ -768,7 +839,7 @@ if run_clicked and run_ready:
             combined_bytes, summary, descriptions, bom_warnings = create_combined_workbook_bytes(bom_bytes)
 
             # Production Schedule
-            schedule_bytes = create_production_schedule_bytes(log_bytes, selected_sheets, summary, descriptions)
+            schedule_bytes = create_production_schedule_bytes(log_bytes, selected_sheets, summary, descriptions, logo_bytes=logo_bytes)
 
             # ZIP both
             zip_buf = io.BytesIO()
