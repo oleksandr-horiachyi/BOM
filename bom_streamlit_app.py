@@ -313,14 +313,9 @@ def try_insert_logo(ws, logo_bytes: Optional[bytes]) -> None:
     try:
         from PIL import Image as PILImage
         from openpyxl.drawing.image import Image as XLImage
-        import tempfile, os
 
-        # Save logo bytes to a temp file (openpyxl needs a file path)
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
-            tmp.write(logo_bytes)
-            tmp_path = tmp.name
-
-        pil_img = PILImage.open(tmp_path)
+        # Get dimensions with PIL (no temp file needed)
+        pil_img = PILImage.open(io.BytesIO(logo_bytes))
         original_width, original_height = pil_img.size
 
         # Scale to fit rows 1-3 (each row = 20pt, 1pt ≈ 1.333px)
@@ -328,12 +323,11 @@ def try_insert_logo(ws, logo_bytes: Optional[bytes]) -> None:
         scale = target_height / original_height
         target_width = int(original_width * scale)
 
-        xl_img = XLImage(tmp_path)
+        # Pass BytesIO directly — no temp file, no deletion issues
+        xl_img = XLImage(io.BytesIO(logo_bytes))
         xl_img.width = target_width
         xl_img.height = target_height
         ws.add_image(xl_img, "A1")
-
-        os.unlink(tmp_path)
     except Exception as e:
         pass  # Logo insert is optional — never break the report
 
