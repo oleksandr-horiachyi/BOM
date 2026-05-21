@@ -184,6 +184,10 @@ NUMBER_FORMAT = '# ##0;-# ##0;-'
 def clean_code(value: Any) -> Optional[str]:
     if value is None:
         return None
+    # Fix: Excel sometimes stores whole numbers as float (4003 → 4003.0)
+    # Convert to int first so str() gives "4003" not "4003.0"
+    if isinstance(value, float) and value == int(value):
+        value = int(value)
     text = str(value).replace("\u00a0", " ").strip().upper()
     text = re.sub(r"\s+", " ", text)
     if text in ("", "NONE", "NAN"):
