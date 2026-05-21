@@ -563,18 +563,37 @@
       </div>
 
       <!-- TOOL 2: COMING SOON -->
-      <div class="tool-card">
+      <!-- TOOL 2: BOM MERGE — LIVE -->
+      <div class="tool-card active">
         <div class="tool-card-header">
           <div class="tool-card-top">
-            <div class="tool-icon">📋</div>
-            <span class="status-badge status-soon">Coming soon</span>
+            <div class="tool-icon">🔀</div>
+            <span class="status-badge status-live">● Live</span>
           </div>
-          <div class="tool-card-name">Tool 2</div>
-          <div class="tool-card-desc">Next automation tool in development. Stay tuned for updates.</div>
+          <div class="tool-card-name">BOM Merge Tool</div>
+          <div class="tool-card-desc">Upload multiple BOM Excel files and merge them into one. QTY values are summed for matching part codes, new parts are added automatically.</div>
         </div>
-        <div class="tool-card-body"></div>
+        <div class="tool-card-body">
+          <div class="outputs-label">Output files you receive</div>
+          <div class="mini-output">
+            <div class="mini-output-icon">📗</div>
+            <div>
+              <div class="mini-output-name">Merged BOM.xlsx</div>
+              <div class="mini-output-sheets">Combined workbook · Color highlights per file</div>
+            </div>
+          </div>
+          <div class="mini-output">
+            <div class="mini-output-icon">📊</div>
+            <div>
+              <div class="mini-output-name">Merge Report.xlsx</div>
+              <div class="mini-output-sheets">Full change log · Added rows · Updated QTY</div>
+            </div>
+          </div>
+        </div>
         <div class="tool-card-footer">
-          <span class="btn-tool-disabled">Coming soon</span>
+          <a href="https://fabtools-merge.streamlit.app" class="btn-tool" target="_blank">
+            Open tool →
+          </a>
         </div>
       </div>
 
