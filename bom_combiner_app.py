@@ -1,7 +1,7 @@
 """
 BOM Combiner — Streamlit Web Version
 FabTools | Tool 3
-All-in-one table: reorder, rename, set qty, delete — everything in one place.
+Drag-and-drop reordering + inline name/qty editing — all in sync.
 """
 
 import io
@@ -10,6 +10,7 @@ from typing import Dict, List
 
 import streamlit as st
 from openpyxl import Workbook, load_workbook
+from streamlit_sortables import sort_items
 
 st.set_page_config(page_title="BOM Combiner — FabTools", page_icon="📋", layout="wide")
 
@@ -44,29 +45,20 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
     background: #E6F1FB; border-left: 3px solid #185FA5; border-radius: 0 8px 8px 0;
     padding: 9px 12px; font-size: 13px; color: #0C447C; line-height: 1.5; margin-bottom: 10px;
 }
-.tbl-header {
-    display: flex; align-items: center; padding: 6px 4px;
-    font-size: 11px; font-weight: 700; color: #8E96A8;
-    letter-spacing: 0.8px; text-transform: uppercase;
-    border-bottom: 2px solid #E6F1FB; margin-bottom: 4px;
+.drag-section {
+    background: #F8F9FC; border: 1px solid #DDE1EA;
+    border-radius: 10px; padding: 16px; margin-bottom: 16px;
 }
-.row-deleted { opacity: 0.35; }
+.drag-hint { font-size: 12px; color: #8E96A8; margin-bottom: 8px; }
 .conflict-badge {
     display: inline-block; background: #FEE2E2; color: #B91C1C;
-    font-size: 10px; font-weight: 700; padding: 1px 6px;
-    border-radius: 4px; margin-left: 4px; vertical-align: middle;
-}
-.ok-badge {
-    display: inline-block; background: #DCFCE7; color: #166534;
-    font-size: 10px; font-weight: 700; padding: 1px 6px;
-    border-radius: 4px; vertical-align: middle;
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
 }
 .renamed-badge {
     display: inline-block; background: #FEF3C7; color: #92400E;
-    font-size: 10px; font-weight: 700; padding: 1px 6px;
-    border-radius: 4px; vertical-align: middle;
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
 }
-.stats-row { display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
+.stats-row { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
 .stat-card { background: #F8F9FC; border: 1px solid #DDE1EA; border-radius: 8px; padding: 12px 20px; text-align: center; }
 .stat-num  { font-size: 24px; font-weight: 700; color: #185FA5; }
 .stat-label{ font-size: 11px; color: #8E96A8; margin-top: 2px; }
@@ -74,9 +66,7 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────
-# HELPERS
-# ─────────────────────────────────────────────────────────────
+# ── HELPERS ──────────────────────────────────────────────────
 
 def read_bom_sheets(file_bytes: bytes, filename: str) -> List[Dict]:
     wb = load_workbook(io.BytesIO(file_bytes), data_only=True)
@@ -128,74 +118,70 @@ def build_combined_bom(rows: List[Dict]) -> bytes:
     return buf.getvalue()
 
 
+def make_drag_label(idx: int) -> str:
+    """Unique drag label that encodes the original index."""
+    name = st.session_state.names[idx]
+    src  = st.session_state.sheets[idx]["source_file"]
+    deleted = st.session_state.deleted[idx]
+    prefix = "🚫 " if deleted else ""
+    return f"{prefix}{name}  —  {src}  [{idx}]"
+
+
+def parse_idx_from_label(label: str) -> int:
+    """Extract original index from drag label."""
+    return int(label.rsplit("[", 1)[-1].rstrip("]"))
+
+
 def init_state(sheets: List[Dict]):
-    """Initialize session state from freshly loaded sheets."""
-    st.session_state.order   = list(range(len(sheets)))   # display order (list of original indices)
+    st.session_state.sheets  = sheets
+    st.session_state.order   = list(range(len(sheets)))
     st.session_state.names   = {i: s["original_name"] for i, s in enumerate(sheets)}
     st.session_state.qtys    = {i: s["original_qty"]  for i, s in enumerate(sheets)}
-    st.session_state.deleted = {i: False               for i, s in enumerate(sheets)}
-    st.session_state.sheets  = sheets
+    st.session_state.deleted = {i: False for i in range(len(sheets))}
     st.session_state.result  = None
 
 
-def move_up(pos: int):
-    o = st.session_state.order
-    if pos > 0:
-        o[pos], o[pos - 1] = o[pos - 1], o[pos]
-
-
-def move_down(pos: int):
-    o = st.session_state.order
-    if pos < len(o) - 1:
-        o[pos], o[pos + 1] = o[pos + 1], o[pos]
-
-
-def delete_row(idx: int):
+def delete_row(idx):
     st.session_state.deleted[idx] = True
 
 
-def restore_row(idx: int):
+def restore_row(idx):
     st.session_state.deleted[idx] = False
 
 
-# ─────────────────────────────────────────────────────────────
-# SESSION STATE INIT
-# ─────────────────────────────────────────────────────────────
+# ── SESSION STATE ─────────────────────────────────────────────
 
 for key, val in [("sheets", []), ("order", []), ("names", {}),
                  ("qtys", {}), ("deleted", {}), ("result", None), ("prev_files", [])]:
     if key not in st.session_state:
         st.session_state[key] = val
 
-# ─────────────────────────────────────────────────────────────
-# HERO
-# ─────────────────────────────────────────────────────────────
+# ── HERO ─────────────────────────────────────────────────────
 
 st.markdown("""
 <div class="hero-banner">
   <h1>📋 BOM Combiner</h1>
-  <p>Upload multiple BOM files, then review and adjust everything in one table —
-     reorder sheets, rename assemblies, set quantities, remove duplicates.</p>
+  <p>Upload multiple BOM files — then drag to reorder, rename, set quantities,
+     and remove duplicates. Everything in one place.</p>
   <div class="hero-steps">
-    <div class="hero-step"><span class="step-num">1</span> Upload BOM files</div>
+    <div class="hero-step"><span class="step-num">1</span> Upload</div>
     <span class="hero-arrow">→</span>
-    <div class="hero-step"><span class="step-num">2</span> Edit the table</div>
+    <div class="hero-step"><span class="step-num">2</span> Drag to reorder</div>
     <span class="hero-arrow">→</span>
-    <div class="hero-step"><span class="step-num">3</span> Generate & download</div>
+    <div class="hero-step"><span class="step-num">3</span> Edit names & qty</div>
+    <span class="hero-arrow">→</span>
+    <div class="hero-step"><span class="step-num">4</span> Generate</div>
   </div>
   <div class="trust-badge">🔒 Files processed in memory — never stored on any server.</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────────────────────
-# STEP 1 — UPLOAD
-# ─────────────────────────────────────────────────────────────
+# ── STEP 1: UPLOAD ────────────────────────────────────────────
 
 st.markdown('<div class="section-header">Step 1 — Upload BOM files</div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="info-box">
-  Upload one or more BOM Excel files (.xlsx).
-  Each sheet becomes one assembly row in the table below.
+  Upload one or more BOM Excel files (.xlsx). Each sheet = one assembly.
   Quantity is read from cell <strong>E2</strong> of each sheet.
 </div>
 """, unsafe_allow_html=True)
@@ -219,112 +205,104 @@ if not st.session_state.sheets:
     st.stop()
 
 sheets = st.session_state.sheets
-order  = st.session_state.order
-n      = len(sheets)
+n = len(sheets)
 
-# ─────────────────────────────────────────────────────────────
-# STEP 2 — UNIFIED EDIT TABLE
-# ─────────────────────────────────────────────────────────────
+# ── STEP 2A: DRAG TO REORDER ──────────────────────────────────
 
-st.markdown('<div class="section-header">Step 2 — Review & edit assemblies</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-header">Step 2 — Drag to reorder, then edit names & quantities</div>', unsafe_allow_html=True)
+
 st.markdown("""
 <div class="info-box">
-  Use <strong>↑ ↓</strong> to reorder. Edit names and quantities inline.
-  Duplicate names are highlighted in red — rename or delete duplicates before generating.
-  Deleted rows are greyed out and excluded from the output.
+  <strong>① Drag</strong> the items below to set the sheet order in the output file.<br>
+  <strong>② Edit</strong> names and quantities in the table that appears below the list.
 </div>
 """, unsafe_allow_html=True)
 
-# Detect conflicts among non-deleted rows
-active_names: Dict[str, List[int]] = {}
-for idx in order:
-    if not st.session_state.deleted[idx]:
-        nm = st.session_state.names[idx]
-        active_names.setdefault(nm, []).append(idx)
-conflict_names = {nm for nm, idxs in active_names.items() if len(idxs) > 1}
+# Build current drag labels from current order
+current_labels = [make_drag_label(idx) for idx in st.session_state.order]
 
-# Track which original names already have a "Keep" (first occurrence stays)
-kept_originals: Dict[str, int] = {}  # original_name → first idx that keeps it
+st.markdown('<p class="drag-hint">☰ &nbsp;Drag to reorder — deleted rows shown with 🚫</p>', unsafe_allow_html=True)
+
+sorted_labels = sort_items(current_labels, direction="vertical", key="drag_order")
+
+# Parse the new order from sorted labels and save to session state
+new_order = [parse_idx_from_label(lbl) for lbl in sorted_labels]
+if new_order != st.session_state.order:
+    st.session_state.order = new_order
+    st.rerun()
+
+order = st.session_state.order
+
+# ── STEP 2B: EDIT TABLE (synced with drag order) ──────────────
+
+st.markdown("---")
 
 # Column headers
-h0, h1, h2, h3, h4, h5, h6 = st.columns([0.4, 0.4, 0.4, 3.5, 2.5, 1, 0.7])
-h0.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">#</span>', unsafe_allow_html=True)
-h3.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">FINAL NAME</span>', unsafe_allow_html=True)
-h4.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">SOURCE FILE</span>', unsafe_allow_html=True)
-h5.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">QTY</span>', unsafe_allow_html=True)
-h6.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">DEL</span>', unsafe_allow_html=True)
-st.divider()
+h_pos, h_name, h_src, h_qty, h_del = st.columns([0.5, 4, 2.5, 1, 0.8])
+h_pos.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">#</span>', unsafe_allow_html=True)
+h_name.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">FINAL NAME</span>', unsafe_allow_html=True)
+h_src.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">SOURCE FILE</span>', unsafe_allow_html=True)
+h_qty.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">QTY</span>', unsafe_allow_html=True)
+h_del.markdown('<span style="font-size:11px;color:#8E96A8;font-weight:700">DEL</span>', unsafe_allow_html=True)
 
-# Track which original names have already been "kept" by a previous row
-seen_originals: Dict[str, bool] = {}
+# Detect conflicts among active rows
+active_order = [idx for idx in order if not st.session_state.deleted[idx]]
+active_name_count: Dict[str, int] = {}
+for idx in active_order:
+    nm = st.session_state.names[idx]
+    active_name_count[nm] = active_name_count.get(nm, 0) + 1
+conflict_names = {nm for nm, cnt in active_name_count.items() if cnt > 1}
 
-for pos, idx in enumerate(order):
-    asm      = sheets[idx]
-    deleted  = st.session_state.deleted[idx]
-    cur_name = st.session_state.names[idx]
-    orig_name= asm["original_name"]
-    is_dup_orig = sum(1 for s in sheets if s["original_name"] == orig_name) > 1
-    already_kept = seen_originals.get(orig_name, False)
-    is_conflict  = cur_name in conflict_names and not deleted
+display_pos = 1
+for idx in order:
+    asm     = sheets[idx]
+    deleted = st.session_state.deleted[idx]
+    cur_name= st.session_state.names[idx]
+    orig    = asm["original_name"]
+    renamed = cur_name != orig
+    conflict= (cur_name in conflict_names) and not deleted
 
-    # Columns: pos | up | dn | name_input | source | qty | delete
-    c0, c_up, c_dn, c_name, c_src, c_qty, c_del = st.columns([0.4, 0.4, 0.4, 3.5, 2.5, 1, 0.7])
+    c_pos, c_name, c_src, c_qty, c_del = st.columns([0.5, 4, 2.5, 1, 0.8])
 
-    row_style = "row-deleted" if deleted else ""
-
-    with c0:
-        if not deleted:
-            st.markdown(f"**{pos + 1}.**")
+    with c_pos:
+        if deleted:
+            st.markdown('<span style="color:#ccc">—</span>', unsafe_allow_html=True)
         else:
-            st.markdown(f"~~{pos + 1}.~~")
-
-    with c_up:
-        if not deleted and pos > 0:
-            if st.button("↑", key=f"up_{pos}_{idx}", help="Move up"):
-                move_up(pos)
-                st.rerun()
-
-    with c_dn:
-        if not deleted and pos < n - 1:
-            if st.button("↓", key=f"dn_{pos}_{idx}", help="Move down"):
-                move_down(pos)
-                st.rerun()
+            st.markdown(f"**{display_pos}.**")
+            display_pos += 1
 
     with c_name:
         if deleted:
-            st.markdown(f"~~`{cur_name}`~~")
+            st.markdown(f'<span style="color:#bbb;text-decoration:line-through">{cur_name}</span>',
+                        unsafe_allow_html=True)
         else:
-            # Show conflict badge if duplicate
-            conflict_hint = " ⚠️ duplicate name!" if is_conflict else ""
             new_name = st.text_input(
                 label=f"name_{idx}",
                 value=cur_name,
                 key=f"name_input_{idx}",
                 label_visibility="collapsed",
-                help=f"Original: {orig_name}{conflict_hint}",
+                help=f"Original: {orig}",
             )
-            # Update name in session state immediately
             if new_name.strip() and new_name.strip() != cur_name:
                 st.session_state.names[idx] = new_name.strip()
                 st.rerun()
 
-            # Show status badge
-            renamed = cur_name != orig_name
-            if is_conflict:
-                st.markdown('<span class="conflict-badge">⚠️ DUPLICATE NAME</span>', unsafe_allow_html=True)
+            if conflict:
+                st.markdown('<span class="conflict-badge">⚠️ DUPLICATE — rename or delete</span>',
+                            unsafe_allow_html=True)
             elif renamed:
-                st.markdown(f'<span class="renamed-badge">✏️ renamed from "{orig_name}"</span>', unsafe_allow_html=True)
-            elif is_dup_orig and already_kept:
-                st.markdown('<span class="conflict-badge">⚠️ same original name exists</span>', unsafe_allow_html=True)
+                st.markdown(f'<span class="renamed-badge">✏️ renamed from "{orig}"</span>',
+                            unsafe_allow_html=True)
 
     with c_src:
-        if not deleted:
-            st.caption(asm["source_file"])
-        else:
-            st.caption(f"~~{asm['source_file']}~~")
+        color = "#bbb" if deleted else "#8E96A8"
+        st.markdown(f'<span style="font-size:12px;color:{color}">{asm["source_file"]}</span>',
+                    unsafe_allow_html=True)
 
     with c_qty:
-        if not deleted:
+        if deleted:
+            st.markdown(f'<span style="color:#bbb">—</span>', unsafe_allow_html=True)
+        else:
             new_qty = st.number_input(
                 label=f"qty_{idx}",
                 min_value=0, max_value=9999,
@@ -333,8 +311,6 @@ for pos, idx in enumerate(order):
                 label_visibility="collapsed",
             )
             st.session_state.qtys[idx] = new_qty
-        else:
-            st.markdown(f"~~{st.session_state.qtys[idx]}~~")
 
     with c_del:
         if not deleted:
@@ -346,53 +322,45 @@ for pos, idx in enumerate(order):
                 restore_row(idx)
                 st.rerun()
 
-    # Track "kept" originals
-    if is_dup_orig and not deleted:
-        seen_originals[orig_name] = True
-
 st.divider()
 
-# Summary row
-active_rows = [idx for idx in order if not st.session_state.deleted[idx]]
-total_qty   = sum(st.session_state.qtys[idx] for idx in active_rows)
+# Totals
+total_qty     = sum(st.session_state.qtys[idx] for idx in active_order)
 deleted_count = sum(1 for idx in order if st.session_state.deleted[idx])
 
-cols = st.columns([5, 2, 1])
-cols[0].markdown(
-    f"**{len(active_rows)} active** assemblies from **{len(uploaded_files)} file(s)**"
-    + (f" &nbsp;·&nbsp; <span style='color:#888'>{deleted_count} deleted</span>" if deleted_count else ""),
-    unsafe_allow_html=True
-)
-cols[1].markdown("**Total units:**")
-cols[2].markdown(f"**{total_qty}**")
+c1, c2, c3 = st.columns([5, 2, 1])
+info = f"**{len(active_order)} active** assemblies from **{len(uploaded_files)} file(s)**"
+if deleted_count:
+    info += f" &nbsp;·&nbsp; <span style='color:#aaa'>{deleted_count} excluded</span>"
+c1.markdown(info, unsafe_allow_html=True)
+c2.markdown("**Total units:**")
+c3.markdown(f"**{total_qty}**")
 
-# ─────────────────────────────────────────────────────────────
-# STEP 3 — GENERATE
-# ─────────────────────────────────────────────────────────────
+# ── STEP 3: GENERATE ─────────────────────────────────────────
 
 st.markdown('<div class="section-header">Step 3 — Generate Combined BOM</div>', unsafe_allow_html=True)
 
-# Recheck conflicts on active rows only
-active_names2: Dict[str, List[int]] = {}
-for idx in active_rows:
+# Final conflict check
+final_name_count: Dict[str, int] = {}
+for idx in active_order:
     nm = st.session_state.names[idx]
-    active_names2.setdefault(nm, []).append(idx)
-conflicts_remain = {nm for nm, idxs in active_names2.items() if len(idxs) > 1}
+    final_name_count[nm] = final_name_count.get(nm, 0) + 1
+final_conflicts = {nm for nm, cnt in final_name_count.items() if cnt > 1}
 
-if conflicts_remain:
-    st.error(f"❌ Duplicate names still exist: **{', '.join(conflicts_remain)}** — rename or delete duplicates before generating.")
+if final_conflicts:
+    st.error(f"❌ Duplicate names: **{', '.join(final_conflicts)}** — rename or delete before generating.")
     can_generate = False
-elif len(active_rows) == 0:
-    st.warning("⚠️ No assemblies to combine — restore or upload files.")
+elif len(active_order) == 0:
+    st.warning("⚠️ No assemblies — restore or upload files.")
     can_generate = False
 else:
-    st.success(f"✅ {len(active_rows)} assemblies ready — no conflicts.")
+    st.success(f"✅ {len(active_order)} assemblies ready — no conflicts.")
     can_generate = True
 
 st.markdown(f"""
 <div class="stats-row">
   <div class="stat-card"><div class="stat-num">{len(uploaded_files)}</div><div class="stat-label">Files</div></div>
-  <div class="stat-card"><div class="stat-num">{len(active_rows)}</div><div class="stat-label">Assemblies</div></div>
+  <div class="stat-card"><div class="stat-num">{len(active_order)}</div><div class="stat-label">Assemblies</div></div>
   <div class="stat-card"><div class="stat-num">{deleted_count}</div><div class="stat-label">Excluded</div></div>
   <div class="stat-card"><div class="stat-num">{total_qty}</div><div class="stat-label">Total units</div></div>
 </div>
@@ -400,7 +368,7 @@ st.markdown(f"""
 
 st.markdown("""
 <div class="info-box">
-  Output: one BOM Excel file with all active assemblies as sheets, in the order above.
+  All active assemblies are combined into one BOM file in the order shown above.
   <strong>Ready to use directly with Tool 1 — BOM Production Automation.</strong>
 </div>
 """, unsafe_allow_html=True)
@@ -412,7 +380,7 @@ if st.button("⚡  Generate Combined BOM", type="primary",
          "final_name":    st.session_state.names[idx],
          "file_bytes":    sheets[idx]["file_bytes"],
          "qty":           st.session_state.qtys[idx]}
-        for idx in active_rows
+        for idx in active_order
     ]
     with st.spinner("Building Combined BOM..."):
         try:
@@ -430,7 +398,7 @@ if st.session_state.result:
         use_container_width=True,
     )
     with st.expander("📋 Final sheet list"):
-        for pos, idx in enumerate(active_rows, 1):
+        for pos, idx in enumerate(active_order, 1):
             renamed = st.session_state.names[idx] != sheets[idx]["original_name"]
             tag = f" ✏️ *(was {sheets[idx]['original_name']})*" if renamed else ""
             st.markdown(
