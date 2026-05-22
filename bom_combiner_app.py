@@ -114,16 +114,21 @@ def build_combined_bom(rows: List[Dict]) -> bytes:
     return buf.getvalue()
 
 
-def make_drag_label(idx: int) -> str:
-    """Label shows final name + qty. Index hidden after § separator for parsing."""
-    name = st.session_state.names[idx]
-    src  = st.session_state.sheets[idx]["source_file"]
-    qty  = st.session_state.qtys[idx]
-    return f"{name}  ×{qty}  —  {src}§{idx}"
-
-
-def parse_idx(label: str) -> int:
-    return int(label.rsplit("§", 1)[-1])
+def make_drag_labels(order: list) -> tuple:
+    """
+    Build clean labels (no hidden characters) and a label→idx mapping dict.
+    Names are unique (enforced in Step 2), so label collision is impossible.
+    """
+    labels = []
+    label_to_idx = {}
+    for idx in order:
+        name  = st.session_state.names[idx]
+        src   = st.session_state.sheets[idx]["source_file"]
+        qty   = st.session_state.qtys[idx]
+        label = f"{name}  ×{qty}  —  {src}"
+        labels.append(label)
+        label_to_idx[label] = idx
+    return labels, label_to_idx
 
 
 def init_state(sheets: List[Dict]):
@@ -334,15 +339,15 @@ for i in active_indices:
         current_order.append(i)
 st.session_state.order = current_order
 
-# Build drag labels using FINAL names (already edited in Step 2)
-drag_labels = [make_drag_label(i) for i in st.session_state.order]
+# Build clean drag labels + mapping dict (no hidden characters)
+drag_labels, label_to_idx = make_drag_labels(st.session_state.order)
 
 st.markdown('<p class="drag-hint">☰ &nbsp;Drag items to reorder</p>', unsafe_allow_html=True)
 
 sorted_labels = sort_items(drag_labels, direction="vertical", key="drag_reorder")
 
-# Parse new order and save
-new_order = [parse_idx(lbl) for lbl in sorted_labels]
+# Map sorted labels back to original indices using the dict
+new_order = [label_to_idx[lbl] for lbl in sorted_labels if lbl in label_to_idx]
 if new_order != st.session_state.order:
     st.session_state.order = new_order
     st.rerun()
