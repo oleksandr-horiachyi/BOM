@@ -115,14 +115,15 @@ def build_combined_bom(rows: List[Dict]) -> bytes:
 
 
 def make_drag_label(idx: int) -> str:
-    """Label uses FINAL name + index embedded for reliable parsing."""
+    """Label shows final name + qty. Index hidden after § separator for parsing."""
     name = st.session_state.names[idx]
     src  = st.session_state.sheets[idx]["source_file"]
-    return f"{name}  —  {src}  [{idx}]"
+    qty  = st.session_state.qtys[idx]
+    return f"{name}  ×{qty}  —  {src}§{idx}"
 
 
 def parse_idx(label: str) -> int:
-    return int(label.rsplit("[", 1)[-1].rstrip("]"))
+    return int(label.rsplit("§", 1)[-1])
 
 
 def init_state(sheets: List[Dict]):
