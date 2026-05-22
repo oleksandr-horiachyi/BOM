@@ -10,6 +10,7 @@ from typing import Dict, List
 
 import streamlit as st
 from openpyxl import Workbook, load_workbook
+from streamlit_sortables import sort_items
 
 st.set_page_config(page_title="BOM Combiner — FabTools", page_icon="📋", layout="centered")
 
@@ -48,22 +49,22 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
     background: #FFF8E1; border-left: 3px solid #F59E0B; border-radius: 0 8px 8px 0;
     padding: 10px 14px; font-size: 13px; color: #92400E; line-height: 1.55; margin-bottom: 12px;
 }
-.asm-row {
-    display: flex; align-items: center; gap: 0;
-    background: #F8F9FC; border: 1px solid #DDE1EA;
-    border-radius: 8px; padding: 10px 14px; margin-bottom: 6px;
-}
-.asm-pos  { font-size: 12px; color: #8E96A8; font-weight: 600; min-width: 24px; }
-.asm-name { font-size: 14px; font-weight: 600; color: #1A1F2E; flex: 1; }
-.asm-sub  { font-size: 11px; color: #8E96A8; }
-.renamed-tag { font-size: 10px; background: #FFF3CD; color: #92400E; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
 .conflict-box { background: #FFF3CD; border: 1px solid #F59E0B; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
 .conflict-title { font-weight: 700; color: #92400E; margin-bottom: 10px; font-size: 14px; }
+.renamed-tag { font-size: 10px; background: #FFF3CD; color: #92400E; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+.qty-row {
+    display: flex; align-items: center; gap: 12px;
+    background: #F8F9FC; border: 1px solid #DDE1EA;
+    border-radius: 8px; padding: 10px 16px; margin-bottom: 6px;
+}
+.qty-name { font-size: 14px; font-weight: 600; color: #1A1F2E; flex: 1; }
+.qty-src  { font-size: 11px; color: #8E96A8; }
 .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 .stat-card { background: #F8F9FC; border: 1px solid #DDE1EA; border-radius: 8px; padding: 14px; text-align: center; }
 .stat-num  { font-size: 28px; font-weight: 700; color: #185FA5; }
 .stat-label{ font-size: 12px; color: #8E96A8; margin-top: 2px; }
 .footer-bar{ text-align: center; font-size: 12px; color: #888; margin-top: 40px; padding-top: 20px; border-top: 1px solid #EFF1F5; }
+.drag-hint { font-size: 12px; color: #8E96A8; margin-bottom: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -119,9 +120,23 @@ def build_combined_bom(assemblies: List[Dict]) -> bytes:
     return buf.getvalue()
 
 
-# ── SESSION STATE ────────────────────────────────────────────
+def make_label(idx: int, assemblies, final_names) -> str:
+    """Create a unique drag-and-drop label for each assembly."""
+    asm   = assemblies[idx]
+    fname = final_names[idx]
+    renamed = fname != asm["sheet_name"]
+    tag   = " ✏️" if renamed else ""
+    return f"{fname}{tag}  |  {asm['source_file']}"
 
-for key, val in [("assemblies", []), ("order", []), ("result_bytes", None), ("prev_files", [])]:
+
+def parse_label(label: str) -> str:
+    """Extract final name from drag label."""
+    return label.split("  |  ")[0].replace(" ✏️", "").strip()
+
+
+# ── SESSION STATE ─────────────────────────────────────────────
+
+for key, val in [("assemblies", []), ("result_bytes", None), ("prev_files", [])]:
     if key not in st.session_state:
         st.session_state[key] = val
 
@@ -130,14 +145,14 @@ for key, val in [("assemblies", []), ("order", []), ("result_bytes", None), ("pr
 st.markdown("""
 <div class="hero-banner">
   <h1>📋 BOM Combiner</h1>
-  <p>Upload multiple BOM Excel files, review quantities, reorder assemblies,
+  <p>Upload multiple BOM Excel files, review quantities, drag to reorder assemblies,
      resolve name conflicts, and download a single Combined BOM ready for Tool 1.</p>
   <div class="hero-steps">
     <div class="hero-step"><span class="step-num">1</span> Upload</div>
     <span class="hero-arrow">→</span>
     <div class="hero-step"><span class="step-num">2</span> Resolve conflicts</div>
     <span class="hero-arrow">→</span>
-    <div class="hero-step"><span class="step-num">3</span> Reorder & set qty</div>
+    <div class="hero-step"><span class="step-num">3</span> Drag to reorder & set qty</div>
     <span class="hero-arrow">→</span>
     <div class="hero-step"><span class="step-num">4</span> Download</div>
   </div>
@@ -145,7 +160,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── STEP 1: UPLOAD ───────────────────────────────────────────
+# ── STEP 1: UPLOAD ────────────────────────────────────────────
 
 st.markdown('<div class="section-header">Step 1 — Upload BOM files</div>', unsafe_allow_html=True)
 st.markdown("""
@@ -166,10 +181,9 @@ if uploaded_files:
         sheets = []
         for f in uploaded_files:
             sheets.extend(read_bom_sheets(f.read(), f.name))
-        st.session_state.assemblies  = sheets
-        st.session_state.order       = list(range(len(sheets)))
+        st.session_state.assemblies   = sheets
         st.session_state.result_bytes = None
-        st.session_state.prev_files  = file_names
+        st.session_state.prev_files   = file_names
 
 assemblies = st.session_state.assemblies
 if not assemblies:
@@ -177,9 +191,8 @@ if not assemblies:
     st.stop()
 
 n = len(assemblies)
-order: List[int] = st.session_state.order   # list of original indices in current display order
 
-# ── STEP 2: CONFLICTS ────────────────────────────────────────
+# ── STEP 2: CONFLICTS ─────────────────────────────────────────
 
 st.markdown('<div class="section-header">Step 2 — Resolve name conflicts</div>', unsafe_allow_html=True)
 
@@ -230,58 +243,59 @@ else:
         st.error(f"❌ Still duplicate names: {', '.join(still_dupes)}. Please use unique names.")
         conflicts_ok = False
 
-# ── STEP 3: REORDER & QTY ────────────────────────────────────
+# ── STEP 3: DRAG TO REORDER + QTY ────────────────────────────
 
 st.markdown('<div class="section-header">Step 3 — Reorder assemblies & set quantities</div>', unsafe_allow_html=True)
+
+# ── 3A: DRAG AND DROP ────────────────────────────────────────
 st.markdown("""
 <div class="info-box">
-  Use <strong>↑ ↓</strong> buttons to move assemblies up or down.
-  The order here is the order of sheets in the output file.
-  Adjust <strong>Qty</strong> if needed.
+  <strong>Drag and drop</strong> the assemblies below to set the sheet order in the output file.
+  Then set the quantity for each assembly in the table below.
 </div>
 """, unsafe_allow_html=True)
 
-qty_values: Dict[int, int] = {}
+st.markdown('<p class="drag-hint">☰ Drag items to reorder</p>', unsafe_allow_html=True)
 
-# Render each assembly row with move buttons
-for pos, idx in enumerate(order):
-    asm = assemblies[idx]
+# Build labels for sortable (must be unique strings)
+labels = [make_label(i, assemblies, final_names) for i in range(n)]
+
+sorted_labels = sort_items(labels, direction="vertical", key="sortable_assemblies")
+
+# Map sorted labels back to assembly indices
+label_to_idx = {make_label(i, assemblies, final_names): i for i in range(n)}
+sorted_order = [label_to_idx.get(lbl, i) for i, lbl in enumerate(sorted_labels)]
+
+# ── 3B: QTY TABLE ────────────────────────────────────────────
+st.markdown("**Quantities:**")
+
+# Header
+ch1, ch2, ch3 = st.columns([1, 4, 1])
+ch1.markdown("**#**")
+ch2.markdown("**Assembly**")
+ch3.markdown("**Qty**")
+st.divider()
+
+qty_values: Dict[int, int] = {}
+for pos, idx in enumerate(sorted_order):
+    asm   = assemblies[idx]
     fname = final_names[idx]
     renamed = fname != asm["sheet_name"]
 
-    col_up, col_dn, col_info, col_qty = st.columns([0.5, 0.5, 7, 2])
-
-    with col_up:
-        if pos > 0:
-            if st.button("↑", key=f"up_{pos}", help="Move up"):
-                order[pos], order[pos - 1] = order[pos - 1], order[pos]
-                st.session_state.order = order
-                st.rerun()
-        else:
-            st.write("")
-
-    with col_dn:
-        if pos < n - 1:
-            if st.button("↓", key=f"dn_{pos}", help="Move down"):
-                order[pos], order[pos + 1] = order[pos + 1], order[pos]
-                st.session_state.order = order
-                st.rerun()
-        else:
-            st.write("")
-
-    with col_info:
+    c1, c2, c3 = st.columns([1, 4, 1])
+    with c1:
+        st.markdown(f"**{pos + 1}.**")
+    with c2:
         tag = ' <span class="renamed-tag">renamed</span>' if renamed else ""
         st.markdown(
-            f'<div class="asm-row">'
-            f'<span class="asm-pos">{pos + 1}.</span>&nbsp;&nbsp;'
-            f'<div><div class="asm-name">{fname}{tag}</div>'
-            f'<div class="asm-sub">{asm["source_file"]}'
-            + (f" &nbsp;·&nbsp; original: {asm['sheet_name']}" if renamed else "")
+            f'<div class="qty-row"><div>'
+            f'<div class="qty-name">{fname}{tag}</div>'
+            f'<div class="qty-src">{asm["source_file"]}'
+            + (f' · original: {asm["sheet_name"]}' if renamed else "")
             + f'</div></div></div>',
             unsafe_allow_html=True,
         )
-
-    with col_qty:
+    with c3:
         qty_values[idx] = st.number_input(
             label=f"qty_{idx}",
             min_value=0, max_value=9999,
@@ -292,10 +306,10 @@ for pos, idx in enumerate(order):
 
 st.divider()
 total_qty = sum(qty_values.values())
-c1, c2, c3 = st.columns([6, 2, 2])
-c1.markdown(f"**{n} assemblies** from **{len(uploaded_files)} file(s)**")
-c2.markdown("**Total units:**")
-c3.markdown(f"**{total_qty}**")
+ct1, ct2, ct3 = st.columns([5, 2, 1])
+ct1.markdown(f"**{n} assemblies** from **{len(uploaded_files)} file(s)**")
+ct2.markdown("**Total units:**")
+ct3.markdown(f"**{total_qty}**")
 
 # ── STEP 4: GENERATE ─────────────────────────────────────────
 
@@ -315,19 +329,20 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-if st.button("⚡  Generate Combined BOM", type="primary", use_container_width=True, disabled=not conflicts_ok):
+if st.button("⚡  Generate Combined BOM", type="primary",
+             use_container_width=True, disabled=not conflicts_ok):
     final_assemblies = [
         {"sheet_name": assemblies[idx]["sheet_name"],
          "final_name": final_names[idx],
          "source_file": assemblies[idx]["source_file"],
          "file_bytes":  assemblies[idx]["file_bytes"],
          "qty":         qty_values[idx]}
-        for idx in order
+        for idx in sorted_order
     ]
     with st.spinner("Building Combined BOM..."):
         try:
             st.session_state.result_bytes = build_combined_bom(final_assemblies)
-            st.success(f"✅ Done! {n} assemblies combined in the correct order.")
+            st.success(f"✅ Done! {n} assemblies combined.")
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
@@ -340,11 +355,13 @@ if st.session_state.result_bytes:
         use_container_width=True,
     )
     with st.expander("📋 Final sheet order"):
-        for pos, idx in enumerate(order, 1):
+        for pos, idx in enumerate(sorted_order, 1):
             renamed = final_names[idx] != assemblies[idx]["sheet_name"]
             tag = " ✏️" if renamed else ""
             st.markdown(
-                f"**{pos}.** `{final_names[idx]}`{tag} &nbsp; qty **{qty_values[idx]}** &nbsp; *{assemblies[idx]['source_file']}*"
+                f"**{pos}.** `{final_names[idx]}`{tag}"
+                f" &nbsp; qty **{qty_values[idx]}**"
+                f" &nbsp; *{assemblies[idx]['source_file']}*"
             )
 
 st.markdown("""
