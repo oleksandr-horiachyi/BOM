@@ -736,40 +736,54 @@ log_file = st.file_uploader("LOG file (.xlsx / .xlsm)", type=["xlsx", "xlsm"], l
 # ── LOGO ─────────────────────────────────────────────────────
 st.markdown('<div class="section-header">Company Logo (optional)</div>', unsafe_allow_html=True)
 
-st.markdown("""
+import os
+
+# Load default logo from repo if exists
+default_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Logo.png")
+default_logo_bytes = None
+if os.path.exists(default_logo_path):
+    with open(default_logo_path, "rb") as f:
+        default_logo_bytes = f.read()
+
+# Checkbox — enable/disable logo
+use_logo = st.checkbox(
+    "Include logo in Production Schedule",
+    value=True,
+    help="When checked, the logo appears in the top-left corner (cells A1–A3) of every Production Schedule sheet.",
+)
+
+logo_bytes = None
+
+if use_logo:
+    st.markdown("""
 <div class="info-box">
   The logo will appear in the top-left corner (cells A1–A3) of every Production Schedule sheet.
-  If you skip this, no logo will be inserted.
+  Upload your own logo or leave blank to use the default company logo.
 </div>
 """, unsafe_allow_html=True)
 
-col_logo1, col_logo2 = st.columns([2, 1])
+    col_logo1, col_logo2 = st.columns([2, 1])
+    with col_logo1:
+        logo_file = st.file_uploader(
+            "Upload your logo (.png / .jpg)",
+            type=["png", "jpg", "jpeg"],
+            label_visibility="collapsed",
+            help="Recommended: PNG with transparent background. Will be scaled to ~80px height.",
+        )
 
-with col_logo1:
-    logo_file = st.file_uploader(
-        "Upload your logo (.png / .jpg)",
-        type=["png", "jpg", "jpeg"],
-        label_visibility="collapsed",
-        help="Recommended: PNG with transparent background. Will be scaled to ~80px height."
-    )
-
-# Load default logo from repo if it exists and user didn't upload one
-import os
-logo_bytes = None
-default_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Logo.png")
-
-if logo_file is not None:
-    logo_bytes = logo_file.read()
-    with col_logo2:
-        st.image(logo_bytes, caption="Your logo", width=120)
-elif os.path.exists(default_logo_path):
-    with open(default_logo_path, "rb") as f:
-        logo_bytes = f.read()
-    with col_logo2:
-        st.image(logo_bytes, caption="Default logo (from repo)", width=120)
+    if logo_file is not None:
+        logo_bytes = logo_file.read()
+        with col_logo2:
+            st.image(logo_bytes, caption="Your logo", width=120)
+    elif default_logo_bytes is not None:
+        logo_bytes = default_logo_bytes
+        with col_logo2:
+            st.image(logo_bytes, caption="Default logo (from repo)", width=120)
+    else:
+        with col_logo2:
+            st.caption("No default logo found.")
 else:
-    with col_logo2:
-        st.caption("No logo — reports will have no logo in header.")
+    st.caption("Logo disabled — Production Schedule will have no logo in the header.")
 
 # ── STEP 2: Select LOG sheets ────────────────────────────────
 if log_file:
