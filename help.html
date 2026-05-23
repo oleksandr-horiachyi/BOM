@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help & Documentation — FabTools</title>
+  <link rel="icon" type="image/x-icon" href="GLF.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #185FA5;
+      --blue-light: #378ADD;
+      --blue-dark:  #0C447C;
+      --blue-bg:    #E6F1FB;
+      --gray-50:    #F8F9FC;
+      --gray-100:   #EFF1F5;
+      --gray-200:   #DDE1EA;
+      --gray-400:   #8E96A8;
+      --gray-700:   #3C4255;
+      --gray-900:   #1A1F2E;
+      --green:      #1D9E75;
+      --green-bg:   #EAF7F2;
+      --amber:      #D97706;
+      --amber-bg:   #FEF3C7;
+      --white:      #FFFFFF;
+      --radius:     8px;
+      --radius-lg:  12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+      font-size: 16px;
+      color: var(--gray-900);
+      background: var(--white);
+      line-height: 1.65;
+    }
+
+    a { color: var(--blue); }
+    a:hover { text-decoration: none; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white); border-bottom: 1px solid var(--gray-200);
+      padding: 0 40px;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 18px; color: var(--gray-900); text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 32px; height: 32px; background: var(--blue);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a { font-size: 14px; color: var(--gray-400); font-weight: 500; text-decoration: none; }
+    .nav-links a:hover { color: var(--gray-900); }
+    .nav-links a.active { color: var(--blue); font-weight: 600; }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 48px; padding: 48px 40px 80px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar { position: sticky; top: 80px; align-self: start; }
+    .sidebar-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px;
+    }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li { margin-bottom: 2px; }
+    .sidebar-nav a {
+      display: block; padding: 6px 10px; border-radius: 6px;
+      font-size: 14px; color: var(--gray-700); text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-nav a:hover { background: var(--gray-100); color: var(--blue); }
+    .sidebar-nav a.sub { padding-left: 22px; font-size: 13px; color: var(--gray-400); }
+    .sidebar-nav a.sub:hover { color: var(--blue); }
+    .sidebar-divider { height: 1px; background: var(--gray-200); margin: 10px 0; }
+
+    /* ── CONTENT ── */
+    .content { min-width: 0; }
+
+    h1 { font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px; }
+    h2 { font-size: 24px; font-weight: 700; margin: 48px 0 16px; padding-top: 48px; border-top: 1px solid var(--gray-200); }
+    h2:first-of-type { margin-top: 32px; }
+    h3 { font-size: 18px; font-weight: 700; margin: 28px 0 10px; color: var(--blue); }
+    h4 { font-size: 15px; font-weight: 700; margin: 20px 0 8px; }
+    p  { margin-bottom: 14px; color: var(--gray-700); }
+    ul, ol { margin: 0 0 14px 20px; color: var(--gray-700); }
+    li { margin-bottom: 6px; }
+
+    .lead {
+      font-size: 18px; color: var(--gray-400); margin-bottom: 32px; line-height: 1.7;
+    }
+
+    /* ── CALLOUTS ── */
+    .callout {
+      border-radius: var(--radius); padding: 14px 18px;
+      margin: 20px 0; display: flex; gap: 12px; align-items: flex-start;
+    }
+    .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .callout-body { font-size: 14px; line-height: 1.6; }
+    .callout-body strong { display: block; margin-bottom: 3px; }
+    .callout.info  { background: var(--blue-bg); border-left: 3px solid var(--blue); }
+    .callout.tip   { background: var(--green-bg); border-left: 3px solid var(--green); }
+    .callout.warn  { background: var(--amber-bg); border-left: 3px solid var(--amber); }
+
+    /* ── STORY BOX ── */
+    .story-box {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+      border-radius: var(--radius-lg); padding: 32px 36px; color: white; margin: 0 0 40px;
+    }
+    .story-box h2 { color: white; border: none; padding: 0; margin: 0 0 12px; font-size: 20px; }
+    .story-box p  { color: rgba(255,255,255,0.85); margin-bottom: 10px; }
+    .story-quote {
+      border-left: 3px solid rgba(255,255,255,0.4);
+      padding-left: 16px; margin: 16px 0;
+      font-style: italic; color: rgba(255,255,255,0.9); font-size: 15px;
+    }
+
+    /* ── STEPS ── */
+    .steps { counter-reset: step; margin: 20px 0; }
+    .step {
+      display: flex; gap: 16px; margin-bottom: 20px;
+      padding: 16px; background: var(--gray-50);
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blue); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
+      counter-increment: step;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-weight: 700; margin-bottom: 4px; font-size: 15px; }
+    .step-desc  { font-size: 14px; color: var(--gray-700); margin: 0; }
+    .step-note  {
+      margin-top: 8px; font-size: 13px;
+      background: var(--blue-bg); border-radius: 6px;
+      padding: 6px 10px; color: var(--blue-dark);
+    }
+
+    /* ── OUTPUT FILES ── */
+    .output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .output-card {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .output-card-icon { font-size: 24px; margin-bottom: 8px; }
+    .output-card-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .output-card-desc { font-size: 13px; color: var(--gray-400); margin-bottom: 10px; }
+    .output-sheets { display: flex; flex-wrap: wrap; gap: 4px; }
+    .sheet-tag {
+      font-size: 11px; font-family: 'Source Code Pro', monospace;
+      background: var(--white); border: 1px solid var(--gray-200);
+      padding: 2px 8px; border-radius: 4px; color: var(--gray-700);
+    }
+
+    /* ── WORKFLOW ── */
+    .workflow {
+      display: flex; align-items: center; gap: 0;
+      margin: 20px 0; flex-wrap: wrap;
+    }
+    .workflow-step {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 12px 16px;
+      text-align: center; min-width: 120px;
+    }
+    .workflow-step-icon { font-size: 22px; }
+    .workflow-step-name { font-size: 12px; font-weight: 700; margin-top: 4px; }
+    .workflow-step-sub  { font-size: 11px; color: var(--gray-400); }
+    .workflow-arrow {
+      font-size: 20px; color: var(--gray-400);
+      padding: 0 8px; flex-shrink: 0;
+    }
+    .workflow-step.highlight {
+      background: var(--blue-bg); border-color: var(--blue);
+    }
+    .workflow-step.highlight .workflow-step-name { color: var(--blue); }
+
+    /* ── FORMAT TABLE ── */
+    .format-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    .format-table th {
+      text-align: left; padding: 10px 12px;
+      background: var(--gray-50); border-bottom: 2px solid var(--gray-200);
+      font-weight: 700; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--gray-400);
+    }
+    .format-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); }
+    .format-table tr:last-child td { border-bottom: none; }
+    .cell-ref {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 13px; font-weight: 600;
+      background: var(--gray-100); padding: 2px 6px; border-radius: 4px;
+    }
+
+    /* ── FAQ ── */
+    .faq-item {
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      margin-bottom: 10px; overflow: hidden;
+    }
+    .faq-q {
+      padding: 14px 18px; font-weight: 600; font-size: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; background: var(--gray-50);
+    }
+    .faq-a { padding: 14px 18px; font-size: 14px; color: var(--gray-700); line-height: 1.65; }
+
+    /* ── TOOL LINKS ── */
+    .tool-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+    .tool-link {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 16px; border: 1px solid var(--gray-200);
+      border-radius: var(--radius); text-decoration: none;
+      transition: border-color 0.15s, transform 0.15s;
+      background: var(--gray-50);
+    }
+    .tool-link:hover { border-color: var(--blue); transform: translateY(-1px); }
+    .tool-link-icon { font-size: 22px; }
+    .tool-link-name { font-weight: 700; font-size: 14px; color: var(--gray-900); }
+    .tool-link-desc { font-size: 12px; color: var(--gray-400); }
+    .tool-link-arrow { font-size: 12px; color: var(--blue); margin-top: 4px; }
+
+    /* ── SCREENSHOT PLACEHOLDER ── */
+    .screenshot-placeholder {
+      width: 100%; aspect-ratio: 16/7;
+      background: var(--gray-100); border: 2px dashed var(--gray-200);
+      border-radius: var(--radius); display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: var(--gray-400); margin: 16px 0; font-size: 14px; gap: 6px;
+    }
+    .screenshot-placeholder span { font-size: 28px; }
+    .screenshot-img {
+      width: 100%; border-radius: var(--radius);
+      border: 1px solid var(--gray-200); margin: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: var(--gray-900); color: rgba(255,255,255,0.4);
+      padding: 32px 40px; margin-top: 0;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo { font-weight: 700; font-size: 16px; color: var(--white); }
+    .footer-links { display: flex; gap: 24px; font-size: 13px; }
+    .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+
+    @media (max-width: 768px) {
+      .page { grid-template-columns: 1fr; padding: 24px 20px; }
+      .sidebar { display: none; }
+      .output-grid, .tool-links { grid-template-columns: 1fr; }
+      .workflow { flex-direction: column; align-items: flex-start; }
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      FabTools
+    </a>
+    <div class="nav-links">
+      <a href="index.html">← Back to FabTools</a>
+      <a href="#overview">Overview</a>
+      <a href="#tool1">Tool 1</a>
+      <a href="#tool2">Tool 2</a>
+      <a href="#tool3">Tool 3</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">On this page</div>
+    <ul class="sidebar-nav">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#story">The problem we solve</a></li>
+      <div class="sidebar-divider"></div>
+      <li><a href="#tool1">⚙️ Tool 1 — BOM Automation</a></li>
+      <li><a href="#tool1-files" class="sub">Required files</a></li>
+      <li><a href="#tool1-steps" class="sub">Step by step</a></li>
+      <li><a href="#tool1-output" class="sub">Output files</a></li>
+      <div class="sidebar-divider"></div>
+      <li><a href="#tool2">🔀 Tool 2 — BOM Merge</a></li>
+      <li><a href="#tool2-steps" class="sub">Step by step</a></li>
+      <li><a href="#tool2-colors" class="sub">Color highlights</a></li>
+      <div class="sidebar-divider"></div>
+      <li><a href="#tool3">📋 Tool 3 — BOM Combiner</a></li>
+      <li><a href="#tool3-steps" class="sub">Step by step</a></li>
+      <div class="sidebar-divider"></div>
+      <li><a href="#workflow">Typical workflow</a></li>
+      <li><a href="#fileformat">File format guide</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- HEADER -->
+    <h1>Help & Documentation</h1>
+    <p class="lead">Everything you need to know about using FabTools — a free set of Excel automation tools for production engineers and designers.</p>
+
+    <div class="tool-links">
+      <a href="https://bomaster-bom.streamlit.app" target="_blank" class="tool-link">
+        <div class="tool-link-icon">⚙️</div>
+        <div class="tool-link-name">BOM Production Automation</div>
+        <div class="tool-link-desc">Generate Production Schedule from BOM + LOG</div>
+        <div class="tool-link-arrow">Open tool →</div>
+      </a>
+      <a href="https://fabtools-merge.streamlit.app" target="_blank" class="tool-link">
+        <div class="tool-link-icon">🔀</div>
+        <div class="tool-link-name">BOM Merge Tool</div>
+        <div class="tool-link-desc">Combine multiple BOM files into one</div>
+        <div class="tool-link-arrow">Open tool →</div>
+      </a>
+      <a href="https://fabtools-combiner.streamlit.app" target="_blank" class="tool-link">
+        <div class="tool-link-icon">📋</div>
+        <div class="tool-link-name">BOM Combiner</div>
+        <div class="tool-link-desc">Collect assemblies and set quantities</div>
+        <div class="tool-link-arrow">Open tool →</div>
+      </a>
+    </div>
+
+    <!-- OVERVIEW -->
+    <h2 id="overview">Overview</h2>
+
+    <div class="story-box" id="story">
+      <h2>The problem these tools solve</h2>
+      <p>In a typical engineering team, designers work on individual assemblies — curtain wall panels, structural units, modular components. Each assembly is a collection of parts, and each part has a unique drawing code assigned by the designer.</p>
+      <div class="story-quote">
+        "What used to take one or two full days now takes 15 minutes."
+      </div>
+      <p>The designer logs every part code into a LOG file — a structured Excel sheet with all the drawing parameters. When it's time to send work to production, they need to create a Production Schedule: match every part code from every assembly to the LOG, calculate quantities based on how many units of each assembly are needed, and produce a formatted workbook ready for the workshop.</p>
+      <p>Before this tool existed, that entire process was done manually — copy-pasting in Excel, looking up part codes row by row, recalculating quantities by hand. Every time. For every new Production Schedule.</p>
+      <p>FabTools automates this completely. Upload your BOM and LOG files, click Run, and download the finished reports in seconds.</p>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Key insight</strong>
+        The tools work because everyone on the team uses the same Excel format. Once all designers use the same BOM and LOG structure, the data can be collected, analysed, and processed automatically — across projects, across assemblies, across teams.
+      </div>
+    </div>
+
+    <!-- TOOL 1 -->
+    <h2 id="tool1">⚙️ Tool 1 — BOM Production Automation</h2>
+    <p>This is the core tool. It takes your BOM file (what parts are needed and how many per assembly) and your LOG file (the master list of all drawing codes with their parameters), matches them by part code, and generates two ready-to-use Excel reports.</p>
+
+    <div class="screenshot-placeholder">
+      <span>🖼️</span>
+      Screenshot — Tool 1 interface (coming soon)
+    </div>
+
+    <h3 id="tool1-files">Required files</h3>
+
+    <table class="format-table">
+      <thead>
+        <tr><th>File</th><th>What it is</th><th>Format</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>BOM file</strong></td>
+          <td>Bill of Materials — one sheet per assembly. Each sheet lists part codes, descriptions, and quantities.</td>
+          <td>.xlsx / .xlsm</td>
+        </tr>
+        <tr>
+          <td><strong>LOG file</strong></td>
+          <td>Production tracking file — one sheet per production unit (e.g. U-1000, U-2000). Contains all drawing codes with parameters like length, dimensions, material, and finish.</td>
+          <td>.xlsx / .xlsm</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <strong>Important: the LOG file is not a system log!</strong>
+        Despite the name, the LOG file is a regular Excel spreadsheet — your production tracking sheet where each tab represents one production unit. It is not a text file or application log.
+      </div>
+    </div>
+
+    <h3 id="tool1-steps">Step by step</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Upload your BOM file</div>
+          <p class="step-desc">Your multi-sheet Excel BOM. Each sheet = one assembly unit. The tool reads part codes from column A (starting row 3) and quantities from column E.</p>
+          <div class="step-note">💡 The number of units per assembly is read from cell E2 of each sheet.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Upload your LOG file</div>
+          <p class="step-desc">Your production tracking Excel file. Each sheet tab is one production unit (e.g. U-1000, U-2000). Part codes must be in column A starting from row 4.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Select LOG sheets</div>
+          <p class="step-desc">The tool reads all sheet names from your LOG file and shows them as checkboxes. Select which production units you want to include in the Production Schedule.</p>
+          <div class="step-note">💡 You can select all or just a subset. For example, if you're only scheduling units U-1000 and U-2000 this week, tick only those two.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Optionally upload your company logo</div>
+          <p class="step-desc">If you upload a logo (.png or .jpg), it will appear in the top-left corner of every Production Schedule sheet. This is optional — reports are complete without it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Click Run</div>
+          <p class="step-desc">The tool matches every part code from your BOM against the selected LOG sheets, calculates total quantities, and builds your reports automatically. Takes a few seconds.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Download your reports</div>
+          <p class="step-desc">Download the Combined BOM, the Production Schedule, or both in a single .zip file. Open directly in Excel — headers styled, columns auto-fitted, filters applied.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="tool1-output">Output files</h3>
+
+    <div class="output-grid">
+      <div class="output-card">
+        <div class="output-card-icon">📊</div>
+        <div class="output-card-name">Combined BOM.xlsx</div>
+        <div class="output-card-desc">A summary workbook combining all assemblies. Answers the question: "Which part appears in which assembly, and in what quantity?"</div>
+        <div class="output-sheets">
+          <span class="sheet-tag">Units</span>
+          <span class="sheet-tag">Parts</span>
+          <span class="sheet-tag">Summary All</span>
+          <span class="sheet-tag">Checks</span>
+        </div>
+      </div>
+      <div class="output-card">
+        <div class="output-card-icon">📅</div>
+        <div class="output-card-name">Production Schedule.xlsx</div>
+        <div class="output-card-desc">One sheet per selected LOG unit. Contains all matched parts with quantities, drawing codes grouped, and a full error report.</div>
+        <div class="output-sheets">
+          <span class="sheet-tag">Schedule (per unit)</span>
+          <span class="sheet-tag">Drawing Codes</span>
+          <span class="sheet-tag">Missing parts</span>
+          <span class="sheet-tag">BOM Summary</span>
+          <span class="sheet-tag">LOG Checks</span>
+          <span class="sheet-tag">Report</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <strong>What happens with unmatched part codes?</strong>
+        If a part code exists in your BOM but is not found in the selected LOG sheets, it is flagged in the <strong>Missing parts</strong> sheet. Nothing is silently dropped — every discrepancy is logged.
+      </div>
+    </div>
+
+    <!-- TOOL 2 -->
+    <h2 id="tool2">🔀 Tool 2 — BOM Merge Tool</h2>
+    <p>Use this tool when you have multiple separate BOM files that need to be combined into one. For example, when different designers have created BOMs for different parts of the same project and you need to consolidate them.</p>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>When to use Tool 2 vs Tool 3</strong>
+        Use <strong>Tool 2 (Merge)</strong> when you want to combine the actual part quantities — matching part codes get their QTY summed together. Use <strong>Tool 3 (Combiner)</strong> when you want to collect separate assemblies into one BOM file while keeping each assembly as its own sheet.
+      </div>
+    </div>
+
+    <div class="screenshot-placeholder">
+      <span>🖼️</span>
+      Screenshot — Tool 2 interface (coming soon)
+    </div>
+
+    <h3 id="tool2-steps">Step by step</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Upload 2 or more BOM files</div>
+          <p class="step-desc">The first file you uploaded becomes the base. All other files are merged into it, in order.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Set the merge order</div>
+          <p class="step-desc">Use the number inputs to set which file is merged first, second, etc. File #1 is always the base.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Click Run Merge</div>
+          <p class="step-desc">The tool processes each file in order: matching part codes get their QTY summed; new part codes are added as new rows; new sheets are copied entirely.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Download results</div>
+          <p class="step-desc">Download the Merged BOM, the Merge Report (full change log), or both in a .zip file.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 id="tool2-colors">Color highlights explained</h3>
+    <p>The merged output file uses color coding so you can immediately see what changed and which file it came from:</p>
+    <ul>
+      <li>🟡 <strong>Yellow</strong> — changes from File #2</li>
+      <li>🔵 <strong>Blue</strong> — changes from File #3</li>
+      <li>🟢 <strong>Green</strong> — changes from File #4</li>
+      <li>🩷 <strong>Pink</strong> — changes from File #5</li>
+      <li>🟣 <strong>Purple</strong> — changes from File #6</li>
+    </ul>
+    <p>For updated rows (QTY summed), only the QTY cell is highlighted. For entirely new rows, the full row is highlighted.</p>
+
+    <!-- TOOL 3 -->
+    <h2 id="tool3">📋 Tool 3 — BOM Combiner</h2>
+    <p>Use this tool to collect multiple BOM files — each containing one or more assemblies — into a single Combined BOM file. You can review and adjust the quantity of each assembly, set the sheet order, and resolve any naming conflicts before generating the output.</p>
+    <p>The output is ready to use directly as the input for Tool 1.</p>
+
+    <div class="screenshot-placeholder">
+      <span>🖼️</span>
+      Screenshot — Tool 3 interface (coming soon)
+    </div>
+
+    <h3 id="tool3-steps">Step by step</h3>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Upload BOM files</div>
+          <p class="step-desc">Upload one or more BOM files. Each sheet in each file is treated as one assembly. The tool reads the unit quantity from cell E2 of each sheet.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Edit names, quantities, and remove duplicates</div>
+          <p class="step-desc">Review all assemblies in one table. Rename assemblies, adjust quantities, or delete assemblies you don't want to include. Duplicate names are highlighted in red and must be resolved.</p>
+          <div class="step-note">💡 If the same assembly name appears in multiple files, you must either rename one of them or delete the duplicate — the tool will not let you generate with duplicate names.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Drag to set sheet order</div>
+          <p class="step-desc">Once all names are final, drag the assemblies into your preferred order. This determines the order of sheet tabs in the output file.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Generate and download</div>
+          <p class="step-desc">Click Generate to build the Combined BOM. Download and use it directly as the BOM input for Tool 1.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKFLOW -->
+    <h2 id="workflow">Typical workflow</h2>
+    <p>Here is the most common end-to-end workflow, from receiving design files to having a Production Schedule ready for the workshop:</p>
+
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📁</div>
+        <div class="workflow-step-name">Receive BOM files</div>
+        <div class="workflow-step-sub">From designers</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step highlight">
+        <div class="workflow-step-icon">📋</div>
+        <div class="workflow-step-name">Tool 3</div>
+        <div class="workflow-step-sub">Combine + set qty</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step highlight">
+        <div class="workflow-step-icon">⚙️</div>
+        <div class="workflow-step-name">Tool 1</div>
+        <div class="workflow-step-sub">Generate schedule</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📥</div>
+        <div class="workflow-step-name">Download reports</div>
+        <div class="workflow-step-sub">Ready for workshop</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🔀</div>
+      <div class="callout-body">
+        <strong>When to use Tool 2 (Merge)</strong>
+        If you receive updated BOM files during production and need to add new parts or updated quantities to an existing BOM, use Tool 2 to merge the update into your master file. The Merge Report will show exactly what changed.
+      </div>
+    </div>
+
+    <!-- FILE FORMAT -->
+    <h2 id="fileformat">File format guide</h2>
+    <p>Both the BOM and LOG files must follow a specific layout for the tools to work correctly. Download the sample files to see the expected structure.</p>
+
+    <h3>BOM file layout</h3>
+    <table class="format-table">
+      <thead><tr><th>Location</th><th>Contents</th></tr></thead>
+      <tbody>
+        <tr><td><span class="cell-ref">Column A</span> from row 3</td><td>Part codes (REF numbers)</td></tr>
+        <tr><td><span class="cell-ref">Column B</span> from row 3</td><td>Part descriptions</td></tr>
+        <tr><td><span class="cell-ref">Column E</span> from row 3</td><td>Quantity per assembly</td></tr>
+        <tr><td><span class="cell-ref">Cell E2</span></td><td>Number of units of this assembly (e.g. 3 means "build 3 of this assembly")</td></tr>
+        <tr><td>Sheet name</td><td>Assembly name (used as the sheet tab in the output)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>LOG file layout</h3>
+    <table class="format-table">
+      <thead><tr><th>Location</th><th>Contents</th></tr></thead>
+      <tbody>
+        <tr><td><span class="cell-ref">Row 3</span></td><td>Column headers (Ref. No., Profile No., dimensions, material, finish, etc.)</td></tr>
+        <tr><td><span class="cell-ref">Column A</span> from row 4</td><td>Part codes — must match the codes in your BOM file</td></tr>
+        <tr><td>Sheet name</td><td>Production unit name (e.g. U-1000, U-2000)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <strong>Part codes: text vs number</strong>
+        Store all part codes as <strong>text</strong> in Excel, not as numbers. If Excel stores a code like <code>4003</code> as a number, it may display as <code>4003.0</code> internally, which will prevent matching. To force text format: select the column → Format Cells → Text, then re-enter the values. Or prefix codes with an apostrophe: <code>'4003</code>.
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <h2 id="faq">Frequently asked questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">🔒 Are my files safe? What happens to my data?</div>
+      <div class="faq-a">Your files are processed entirely in a temporary server session and are never stored, logged, or shared. Once you close the browser tab, everything is gone. Anthropic/Streamlit does not have access to your files.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">📄 What file formats are supported?</div>
+      <div class="faq-a">All tools accept <strong>.xlsx</strong> and <strong>.xlsm</strong> (macro-enabled) Excel files. The tools do not support .xls (old Excel format), .csv, or .ods files.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">⚙️ Do I need to install anything?</div>
+      <div class="faq-a">Nothing at all. FabTools runs entirely in your web browser. No software installation, no account creation, no license required.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">🔢 What if some part codes don't match between BOM and LOG?</div>
+      <div class="faq-a">The tool automatically generates a <strong>Missing parts</strong> sheet and a <strong>LOG Checks</strong> sheet listing every unmatched code. Nothing is silently ignored.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">💰 Is it free?</div>
+      <div class="faq-a">Yes, completely free. No usage limits, no subscription, no hidden costs.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">📥 Where can I get sample files to try the tools?</div>
+      <div class="faq-a">Download sample BOM and LOG files from the <a href="index.html#samples">FabTools homepage</a>. They contain realistic example data that you can use to test all three tools.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">🐛 Something isn't working — what should I do?</div>
+      <div class="faq-a">First, download the sample files and try running the tool with those. If the sample files work but your own files don't, the most common causes are: wrong column layout, part codes stored as numbers instead of text, or unexpected sheet structure. Check the <a href="#fileformat">file format guide</a> above.</div>
+    </div>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">FabTools</div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="https://bomaster-bom.streamlit.app" target="_blank">Tool 1</a>
+      <a href="https://fabtools-merge.streamlit.app" target="_blank">Tool 2</a>
+      <a href="https://fabtools-combiner.streamlit.app" target="_blank">Tool 3</a>
+      <a href="https://github.com/oleksandr-horiachyi/BOM" target="_blank">GitHub</a>
+    </div>
+    <div style="font-size:12px">Built with Python &amp; Streamlit · 2026</div>
+  </div>
+</footer>
+
+</body>
+</html>
