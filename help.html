@@ -611,10 +611,29 @@
     <p>Use this tool to collect multiple BOM files — each containing one or more assemblies — into a single Combined BOM file. You can review and adjust the quantity of each assembly, set the sheet order, and resolve any naming conflicts before generating the output.</p>
     <p>The output is ready to use directly as the input for Tool 1.</p>
 
-    <div class="callout tip">
-      <div class="callout-icon">📸</div>
-      <div class="callout-body">Screenshots for Tool 3 coming soon. Try it live at <a href="https://fabtools-combiner.streamlit.app" target="_blank">fabtools-combiner.streamlit.app</a></div>
-    </div>
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px">Step 1 — Upload area (before uploading)</p>
+    <img src="tool3-step1-empty.png" class="screenshot-img" alt="Tool 3 — Step 1 empty" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 1 — Five BOM files uploaded</p>
+    <img src="tool3-step1-files.png" class="screenshot-img" alt="Tool 3 — Files loaded" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 2 — Duplicate names highlighted in red, must be resolved before continuing</p>
+    <img src="tool3-step2-conflicts.png" class="screenshot-img" alt="Tool 3 — Name conflicts" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 2 — Conflicts resolved: one assembly deleted, two renamed</p>
+    <img src="tool3-step2-resolved.png" class="screenshot-img" alt="Tool 3 — Conflicts resolved" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 3 — Drag to reorder (default order)</p>
+    <img src="tool3-step3-drag.png" class="screenshot-img" alt="Tool 3 — Drag reorder" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 3 — After reordering: Unit-1 moved to end</p>
+    <img src="tool3-step3-reordered.png" class="screenshot-img" alt="Tool 3 — Reordered" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 4 — Generate: 5 files, 6 assemblies, 1 excluded, 262 total units</p>
+    <img src="tool3-step4-generate.png" class="screenshot-img" alt="Tool 3 — Generate step" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Done — 5 assemblies combined, ready to download</p>
+    <img src="tool3-done.png" class="screenshot-img" alt="Tool 3 — Done" />
 
     <h3 id="tool3-steps">Step by step</h3>
 
@@ -781,7 +800,13 @@
 
     <div class="faq-item">
       <div class="faq-q">📥 Where can I get sample files to try the tools?</div>
-      <div class="faq-a">Download sample BOM and LOG files from the <a href="index.html#samples">FabTools homepage</a>. They contain realistic example data that you can use to test all three tools.</div>
+      <div class="faq-a">
+        Download sample files from the <a href="index.html#samples">FabTools homepage</a>:
+        <ul style="margin-top:8px;margin-left:16px;font-size:14px">
+          <li><strong>Tool 1:</strong> <a href="sample-bom.xlsx" download>sample-bom.xlsx</a> + <a href="sample-log.xlsx" download>sample-log.xlsx</a></li>
+          <li><strong>Tool 2 &amp; 3:</strong> <a href="sample-combiner-1.xlsx" download>sample-1.xlsx</a>, <a href="sample-combiner-2.xlsx" download>sample-2.xlsx</a>, <a href="sample-combiner-3.xlsx" download>sample-3.xlsx</a>, <a href="sample-combiner-4.xlsx" download>sample-4.xlsx</a>, <a href="sample-combiner-5.xlsx" download>sample-5.xlsx</a> — upload all five to test Tool 3, or any two/three to test Tool 2</li>
+        </ul>
+      </div>
     </div>
 
     <div class="faq-item">

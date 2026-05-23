@@ -306,7 +306,7 @@
 
     /* ── SAMPLES ───────────────────────────────────── */
     .samples-bg { background: var(--blue-bg); }
-    .samples-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .samples-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
     .sample-card {
       background: var(--white);
       border: 1px solid var(--gray-200);
@@ -643,7 +643,7 @@
       <div class="sample-card">
         <div class="sample-icon">📗</div>
         <div>
-          <div class="sample-title">Sample BOM File</div>
+          <div class="sample-title">Sample BOM File — Tool 1</div>
           <div class="sample-desc">A multi-sheet Excel BOM with example part codes, descriptions, and quantities. Each sheet represents one assembly unit.</div>
           <a href="sample-bom.xlsx" class="btn-download" download>
             ⬇ Download BOM sample (.xlsx)
@@ -654,11 +654,26 @@
       <div class="sample-card">
         <div class="sample-icon">📘</div>
         <div>
-          <div class="sample-title">Sample LOG File</div>
-          <div class="sample-desc">A multi-sheet Excel LOG file with example production tracking data. Each sheet is one production unit (U-1000, U-2000, etc.).</div>
+          <div class="sample-title">Sample LOG File — Tool 1</div>
+          <div class="sample-desc">A multi-sheet Excel LOG file with example production tracking data. Each sheet is one production unit.</div>
           <a href="sample-log.xlsx" class="btn-download" download>
             ⬇ Download LOG sample (.xlsx)
           </a>
+        </div>
+      </div>
+
+      <div class="sample-card">
+        <div class="sample-icon">📦</div>
+        <div>
+          <div class="sample-title">Sample BOM Files — Tool 2 &amp; 3</div>
+          <div class="sample-desc">Five separate BOM files. Upload all five to test Tool 3, or any two/three to test Tool 2.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+            <a href="sample-combiner-1.xlsx" class="btn-download" download style="font-size:12px;padding:5px 10px">⬇ File 1</a>
+            <a href="sample-combiner-2.xlsx" class="btn-download" download style="font-size:12px;padding:5px 10px">⬇ File 2</a>
+            <a href="sample-combiner-3.xlsx" class="btn-download" download style="font-size:12px;padding:5px 10px">⬇ File 3</a>
+            <a href="sample-combiner-4.xlsx" class="btn-download" download style="font-size:12px;padding:5px 10px">⬇ File 4</a>
+            <a href="sample-combiner-5.xlsx" class="btn-download" download style="font-size:12px;padding:5px 10px">⬇ File 5</a>
+          </div>
         </div>
       </div>
     </div>
