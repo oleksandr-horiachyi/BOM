@@ -467,9 +467,8 @@ if uploaded_files and len(uploaded_files) >= 2:
 
     sorted_names = sort_items(st.session_state.merge_order, direction="vertical", key="merge_drag")
 
-    if sorted_names != st.session_state.merge_order:
+    if sorted_names and sorted_names != st.session_state.merge_order:
         st.session_state.merge_order = sorted_names
-        st.rerun()
 
     # Show color legend
     st.markdown("**Merge sequence:**")

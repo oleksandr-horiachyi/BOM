@@ -358,9 +358,9 @@ sorted_labels = sort_items(drag_labels, direction="vertical", key="drag_reorder"
 
 # Map sorted labels back to original indices using the dict
 new_order = [label_to_idx[lbl] for lbl in sorted_labels if lbl in label_to_idx]
-if new_order != st.session_state.order:
+# Update order without rerun — Streamlit re-renders automatically after sort_items interaction
+if new_order and new_order != st.session_state.order:
     st.session_state.order = new_order
-    st.rerun()
 
 # Show final order summary below drag list
 st.markdown("**Final sheet order:**")
