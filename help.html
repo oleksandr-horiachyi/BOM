@@ -381,10 +381,11 @@
     <h2 id="tool1">⚙️ Tool 1 — BOM Production Automation</h2>
     <p>This is the core tool. It takes your BOM file (what parts are needed and how many per assembly) and your LOG file (the master list of all drawing codes with their parameters), matches them by part code, and generates two ready-to-use Excel reports.</p>
 
-    <div class="screenshot-placeholder">
-      <span>🖼️</span>
-      Screenshot — Tool 1 interface (coming soon)
-    </div>
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px">Step 1 — Upload your files (before uploading)</p>
+    <img src="tool1-step1-empty.png" class="screenshot-img" alt="Tool 1 — Step 1 upload area" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 1 — Files selected and ready</p>
+    <img src="tool1-step1-files.png" class="screenshot-img" alt="Tool 1 — Files loaded" />
 
     <h3 id="tool1-files">Required files</h3>
 
@@ -463,6 +464,18 @@
       </div>
     </div>
 
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px">Company logo option + LOG sheet selection</p>
+    <img src="tool1-logo-sheets.png" class="screenshot-img" alt="Tool 1 — Logo and sheet selection" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Drawing Code Settings</p>
+    <img src="tool1-drawing-codes.png" class="screenshot-img" alt="Tool 1 — Drawing code settings" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 3 — Run button with output preview</p>
+    <img src="tool1-step3-run.png" class="screenshot-img" alt="Tool 1 — Run step" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Step 4 — Download your reports</p>
+    <img src="tool1-step4-download.png" class="screenshot-img" alt="Tool 1 — Download step" />
+
     <h3 id="tool1-output">Output files</h3>
 
     <div class="output-grid">
@@ -492,6 +505,15 @@
       </div>
     </div>
 
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px">Combined BOM — Units sheet (which part appears in which assembly)</p>
+    <img src="output-combined-bom.png" class="screenshot-img" alt="Combined BOM — Units sheet" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Production Schedule — one sheet per production unit</p>
+    <img src="output-production-schedule.png" class="screenshot-img" alt="Production Schedule sheet" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Drawing Codes — parts grouped by base drawing number</p>
+    <img src="output-drawing-codes.png" class="screenshot-img" alt="Drawing Codes sheet" />
+
     <div class="callout info">
       <div class="callout-icon">ℹ️</div>
       <div class="callout-body">
@@ -512,9 +534,9 @@
       </div>
     </div>
 
-    <div class="screenshot-placeholder">
-      <span>🖼️</span>
-      Screenshot — Tool 2 interface (coming soon)
+    <div class="callout tip">
+      <div class="callout-icon">📸</div>
+      <div class="callout-body">Screenshots for Tool 2 coming soon. Try it live at <a href="https://fabtools-merge.streamlit.app" target="_blank">fabtools-merge.streamlit.app</a></div>
     </div>
 
     <h3 id="tool2-steps">Step by step</h3>
@@ -566,9 +588,9 @@
     <p>Use this tool to collect multiple BOM files — each containing one or more assemblies — into a single Combined BOM file. You can review and adjust the quantity of each assembly, set the sheet order, and resolve any naming conflicts before generating the output.</p>
     <p>The output is ready to use directly as the input for Tool 1.</p>
 
-    <div class="screenshot-placeholder">
-      <span>🖼️</span>
-      Screenshot — Tool 3 interface (coming soon)
+    <div class="callout tip">
+      <div class="callout-icon">📸</div>
+      <div class="callout-body">Screenshots for Tool 3 coming soon. Try it live at <a href="https://fabtools-combiner.streamlit.app" target="_blank">fabtools-combiner.streamlit.app</a></div>
     </div>
 
     <h3 id="tool3-steps">Step by step</h3>
@@ -646,6 +668,12 @@
     <!-- FILE FORMAT -->
     <h2 id="fileformat">File format guide</h2>
     <p>Both the BOM and LOG files must follow a specific layout for the tools to work correctly. Download the sample files to see the expected structure.</p>
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px">Example BOM file — each sheet is one assembly</p>
+    <img src="example-bom-file.png" class="screenshot-img" alt="Example BOM file structure" />
+
+    <p style="font-size:13px;color:#8E96A8;margin-bottom:4px;margin-top:16px">Example LOG file — each sheet is one production unit</p>
+    <img src="example-log-file.png" class="screenshot-img" alt="Example LOG file structure" />
 
     <h3>BOM file layout</h3>
     <table class="format-table">
