@@ -966,13 +966,13 @@ if run_clicked and run_ready:
             st.info("Please check that your files match the expected format. Download sample files from the FabTools homepage.")
 
 # Footer
-st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
+st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool1" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="footer-bar">
   <a href="https://oleksandr-horiachyi.github.io/BOM/" target="_blank">← Back to FabTools</a>
   &nbsp;·&nbsp;
-  <a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank">📖 Help &amp; Docs</a>
+  <a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool1" target="_blank">📖 Help &amp; Docs</a>
   &nbsp;·&nbsp; Built with Python &amp; Streamlit &nbsp;·&nbsp;
   <a href="https://github.com/oleksandr-horiachyi/BOM" target="_blank">GitHub</a>
 </div>

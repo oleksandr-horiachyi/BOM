@@ -12,7 +12,7 @@ import streamlit as st
 from openpyxl import Workbook, load_workbook
 from streamlit_sortables import sort_items
 
-st.set_page_config(page_title="BOM Combiner — FabTools", page_icon="📋", layout="wide")
+st.set_page_config(page_title="BOM Combiner — FabTools", page_icon="📋", layout="centered")
 
 st.markdown("""
 <style>
@@ -421,7 +421,7 @@ if st.session_state.result:
                 f" — *{sheets[i]['source_file']}*"
             )
 
-st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
+st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool3" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="footer-bar">

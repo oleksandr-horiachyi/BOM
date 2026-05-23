@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
 from openpyxl import Workbook, load_workbook
+from streamlit_sortables import sort_items
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
@@ -442,53 +443,48 @@ uploaded_files = st.file_uploader(
     label_visibility="collapsed",
 )
 
-# ── STEP 2: File order ───────────────────────────────────────
-if uploaded_files and len(uploaded_files) >= 2:
-    st.markdown('<div class="section-header">Step 2 — Merge order</div>', unsafe_allow_html=True)
+# ── STEP 2: File order — drag and drop ───────────────────────
+if "merge_order" not in st.session_state:
+    st.session_state.merge_order = []
 
+if uploaded_files and len(uploaded_files) >= 2:
+    st.markdown('<div class="section-header">Step 2 — Set merge order</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="info-box">
-      Files are merged in the order shown below.
-      Use the number inputs to reorder them if needed.
-      <strong>File #1 is always the base.</strong>
+      <strong>Drag</strong> the files below to set the merge order.
+      The file in <strong>position 1 is always the base</strong> — all other files are merged into it in order.
+      Each merge file gets a unique highlight color in the output.
     </div>
     """, unsafe_allow_html=True)
 
-    # Allow user to set custom order
-    order_inputs = {}
-    for i, f in enumerate(uploaded_files):
-        col1, col2 = st.columns([1, 6])
-        with col1:
-            order_inputs[f.name] = st.number_input(
-                f"Order for {f.name}", min_value=1, max_value=len(uploaded_files),
-                value=i + 1, key=f"order_{f.name}", label_visibility="collapsed"
-            )
-        with col2:
-            badge = "badge-base" if i == 0 else "badge-merge"
-            label = "BASE" if i == 0 else f"Merge #{i}"
-            color_info = MERGE_COLORS[(i - 1) % len(MERGE_COLORS)][1] if i > 0 else ""
-            color_hex = MERGE_COLORS[(i - 1) % len(MERGE_COLORS)][0] if i > 0 else None
-            swatch = f'<span class="color-swatch" style="background:#{color_hex}"></span>' if color_hex else ""
-            st.markdown(
-                f'<div class="file-order-card">'
-                f'<span class="file-badge {badge}">{label}</span>'
-                f'📄 {f.name} &nbsp; {swatch}{color_info}'
-                f'</div>',
-                unsafe_allow_html=True
-            )
+    file_names = [f.name for f in uploaded_files]
 
-    # Sort files by user-specified order
-    sorted_files = sorted(uploaded_files, key=lambda f: order_inputs[f.name])
+    # Init or reset order when file list changes
+    if set(st.session_state.merge_order) != set(file_names):
+        st.session_state.merge_order = file_names.copy()
 
+    st.markdown('<p style="font-size:12px;color:#8E96A8;margin-bottom:6px">☰ &nbsp;Drag to reorder — position 1 = base file</p>', unsafe_allow_html=True)
+
+    sorted_names = sort_items(st.session_state.merge_order, direction="vertical", key="merge_drag")
+
+    if sorted_names != st.session_state.merge_order:
+        st.session_state.merge_order = sorted_names
+        st.rerun()
+
+    # Show color legend
     st.markdown("**Merge sequence:**")
     seq_parts = []
-    for i, f in enumerate(sorted_files):
+    for i, name in enumerate(st.session_state.merge_order):
         if i == 0:
-            seq_parts.append(f"**{f.name}** (base)")
+            seq_parts.append(f"**{name}** (BASE)")
         else:
             color = MERGE_COLORS[(i - 1) % len(MERGE_COLORS)][1]
-            seq_parts.append(f"{f.name} {color}")
+            seq_parts.append(f"{name} {color}")
     st.caption(" → ".join(seq_parts))
+
+    # Build sorted file list from drag order
+    name_to_file = {f.name: f for f in uploaded_files}
+    sorted_files = [name_to_file[name] for name in st.session_state.merge_order if name in name_to_file]
 
 elif uploaded_files and len(uploaded_files) == 1:
     st.warning("⚠️ Please upload at least 2 files to merge.")
@@ -616,7 +612,7 @@ with st.expander("🎨 Color coding guide"):
         )
 
 # Footer
-st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
+st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool2" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="footer-bar">
