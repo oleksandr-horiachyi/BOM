@@ -383,6 +383,7 @@
     </a>
     <div class="nav-links">
       <a href="#tools">Tools</a>
+      <a href="#which-tool">Which tool?</a>
       <a href="#how">How it works</a>
       <a href="#samples">Sample files</a>
       <a href="#faq">FAQ</a>
@@ -465,6 +466,69 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHICH TOOL TO USE -->
+<section class="section" id="which-tool">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">Which tool do I need?</div>
+      <div class="section-title">Three workflows, one goal.</div>
+      <div class="section-sub">Choose the scenario that matches your situation and follow the steps.</div>
+    </div>
+
+    <div style="display:grid;gap:16px">
+
+      <!-- Workflow 1 -->
+      <div style="background:#F8F9FC;border:1px solid #DDE1EA;border-left:4px solid #185FA5;border-radius:12px;padding:20px 24px">
+        <div style="font-size:13px;font-weight:700;color:#185FA5;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Workflow 1</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:6px">You already have a complete BOM file</div>
+        <div style="font-size:14px;color:#8E96A8;margin-bottom:14px">One BOM file with all assemblies and quantities already set — just add the LOG file and generate.</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📗 BOM file</span>
+          <span style="font-weight:700;color:#185FA5;font-size:18px">+</span>
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📘 LOG file</span>
+          <span style="color:#8E96A8">→</span>
+          <a href="https://bomaster-bom.streamlit.app" target="_blank" style="background:#185FA5;color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;text-decoration:none">⚙️ Tool 1</a>
+          <span style="color:#8E96A8">→</span>
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📥 Reports</span>
+        </div>
+      </div>
+
+      <!-- Workflow 2 -->
+      <div style="background:#F8F9FC;border:1px solid #DDE1EA;border-left:4px solid #1D9E75;border-radius:12px;padding:20px 24px">
+        <div style="font-size:13px;font-weight:700;color:#1D9E75;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Workflow 2</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:6px">You have separate BOM files per assembly</div>
+        <div style="font-size:14px;color:#8E96A8;margin-bottom:14px">Individual BOM files for each assembly type — combine them first, review and set quantities, then generate the schedule.</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📁 BOM files</span>
+          <span style="color:#8E96A8">→</span>
+          <a href="https://fabtools-combiner.streamlit.app" target="_blank" style="background:#1D9E75;color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;text-decoration:none">📋 Tool 3</a>
+          <span style="color:#8E96A8">→</span>
+          <a href="https://bomaster-bom.streamlit.app" target="_blank" style="background:#185FA5;color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;text-decoration:none">⚙️ Tool 1</a>
+          <span style="color:#8E96A8">→</span>
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📥 Reports</span>
+        </div>
+      </div>
+
+      <!-- Workflow 3 -->
+      <div style="background:#F8F9FC;border:1px solid #DDE1EA;border-left:4px solid #D97706;border-radius:12px;padding:20px 24px">
+        <div style="font-size:13px;font-weight:700;color:#D97706;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Workflow 3</div>
+        <div style="font-size:17px;font-weight:700;margin-bottom:6px">Multiple designers, each covering a part type</div>
+        <div style="font-size:14px;color:#8E96A8;margin-bottom:14px">Work is split — one designer does profiles, another brackets, another panels. Merge all their BOMs into one master file first.</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">👥 BOM files</span>
+          <span style="color:#8E96A8">→</span>
+          <a href="https://fabtools-merge.streamlit.app" target="_blank" style="background:#D97706;color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;text-decoration:none">🔀 Tool 2</a>
+          <span style="color:#8E96A8">→</span>
+          <a href="https://bomaster-bom.streamlit.app" target="_blank" style="background:#185FA5;color:#fff;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;text-decoration:none">⚙️ Tool 1</a>
+          <span style="color:#8E96A8">→</span>
+          <span style="background:#fff;border:1px solid #DDE1EA;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600">📥 Reports</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -765,6 +829,7 @@
     </div>
     <div class="footer-links">
       <a href="#tools">Tools</a>
+      <a href="#which-tool">Which tool?</a>
       <a href="#how">How it works</a>
       <a href="#samples">Samples</a>
       <a href="https://github.com/oleksandr-horiachyi/BOM" target="_blank">GitHub</a>
