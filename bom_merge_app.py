@@ -89,6 +89,17 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
 }
 .stat-num { font-size: 28px; font-weight: 700; color: #185FA5; }
 .stat-label { font-size: 12px; color: #8E96A8; margin-top: 2px; }
+.help-btn {
+    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    background: #185FA5; color: white !important;
+    width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; text-decoration: none !important;
+    box-shadow: 0 4px 16px rgba(24,95,165,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.help-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(24,95,165,0.5); }
+
 .footer-bar {
     text-align: center; font-size: 12px; color: #888;
     margin-top: 40px; padding-top: 20px; border-top: 1px solid #EFF1F5;
@@ -605,9 +616,13 @@ with st.expander("🎨 Color coding guide"):
         )
 
 # Footer
+st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
+
 st.markdown("""
 <div class="footer-bar">
   <a href="https://oleksandr-horiachyi.github.io/BOM/" target="_blank">← Back to FabTools</a>
+  &nbsp;·&nbsp;
+  <a href="https://oleksandr-horiachyi.github.io/BOM/help.html" target="_blank">📖 Help & Docs</a>
   &nbsp;·&nbsp; Built with Python &amp; Streamlit &nbsp;·&nbsp;
   <a href="https://github.com/oleksandr-horiachyi/BOM" target="_blank">GitHub</a>
 </div>
