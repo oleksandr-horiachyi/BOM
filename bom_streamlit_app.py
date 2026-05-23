@@ -207,11 +207,23 @@ def to_number(value: Any) -> float:
     except ValueError:
         return 0
 
-def get_drawing_code(part_code: Any) -> Optional[str]:
+def get_drawing_code(part_code: Any, mode: str = "auto", fixed_length: int = 6) -> Optional[str]:
+    """
+    Extract drawing code from a part code.
+    mode="auto"  → strip trailing -N suffix if N is a pure integer with ≤ 3 digits
+                   e.g. U-1001-1 → U-1001,  1000-12 → 1000,  U-1000 → U-1000
+    mode="fixed" → return first fixed_length characters
+    """
     code = clean_code(part_code)
     if code is None:
         return None
-    return code[:6]
+    if mode == "fixed":
+        return code[:fixed_length] if len(code) >= fixed_length else code
+    # Auto mode: strip -N suffix where N is 1-3 digit integer
+    match = re.match(r"^(.+)-(\d{1,3})$", code)
+    if match:
+        return match.group(1)
+    return code
 
 def safe_sheet_title(title: str, existing: Optional[set] = None) -> str:
     if existing is None:
@@ -561,14 +573,14 @@ def create_schedule_sheet_from_log(out_wb, log_bytes, log_sheet_name, summary, d
         "scheduled_codes": sorted(matched_codes),
     }
 
-def create_drawing_codes_sheet(wb, reports, summary, descriptions):
+def create_drawing_codes_sheet(wb, reports, summary, descriptions, drawing_code_mode="auto", drawing_code_length=6):
     ws = wb.create_sheet("Drawing Codes")
     drawing_map = {}
     for rep in reports:
         log_sheet = rep.get("log_sheet", "")
         for part_code in rep.get("scheduled_codes", []):
             code = clean_code(part_code)
-            drawing_code = get_drawing_code(code)
+            drawing_code = get_drawing_code(code, mode=drawing_code_mode, fixed_length=drawing_code_length)
             if code is None or drawing_code is None:
                 continue
             if drawing_code not in drawing_map:
@@ -592,7 +604,7 @@ def create_drawing_codes_sheet(wb, reports, summary, descriptions):
     apply_number_format(ws)
     auto_width(ws, max_width=80)
 
-def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, descriptions, logo_bytes=None) -> bytes:
+def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, descriptions, logo_bytes=None, drawing_code_mode="auto", drawing_code_length=6) -> bytes:
     wb = Workbook()
     report_ws = wb.active
     report_ws.title = "Report"
@@ -602,7 +614,7 @@ def create_production_schedule_bytes(log_bytes, selected_log_sheets, summary, de
     for sheet_name in selected_log_sheets:
         reports.append(create_schedule_sheet_from_log(wb, log_bytes, sheet_name, summary, descriptions, existing_titles, logo_bytes=logo_bytes))
 
-    create_drawing_codes_sheet(wb, reports, summary, descriptions)
+    create_drawing_codes_sheet(wb, reports, summary, descriptions, drawing_code_mode=drawing_code_mode, drawing_code_length=drawing_code_length)
     existing_titles.add("Drawing Codes")
 
     # Report sheet
@@ -792,6 +804,48 @@ else:
     selected_sheets = []
     log_bytes = None
 
+# ── DRAWING CODE SETTINGS ────────────────────────────────────
+st.markdown('<div class="section-header">Drawing Code Settings</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="info-box">
+  The <strong>Drawing Codes</strong> sheet in the Production Schedule groups parts by their drawing number.
+  Choose how the drawing code is extracted from your part codes.
+</div>
+""", unsafe_allow_html=True)
+
+dc_col1, dc_col2 = st.columns([2, 1])
+with dc_col1:
+    drawing_code_mode = st.radio(
+        label="Drawing code detection",
+        options=["Auto (strip -N suffix)", "Fixed length"],
+        index=0,
+        horizontal=True,
+        help="Auto: U-1001-1 → U-1001, 1000-12 → 1000, U-1000 → U-1000\nFixed: use first N characters of the part code",
+    )
+with dc_col2:
+    drawing_code_length = st.number_input(
+        label="Fixed length (characters)",
+        min_value=1, max_value=20, value=6, step=1,
+        disabled=(drawing_code_mode == "Auto (strip -N suffix)"),
+        help="Only used when Fixed length mode is selected",
+    )
+
+dc_mode = "auto" if drawing_code_mode == "Auto (strip -N suffix)" else "fixed"
+
+# Preview example
+with st.expander("Preview — how your codes will be grouped"):
+    example_codes = ["U-1000", "U-1001-1", "U-1001-2", "U-1001-99", "1000", "1000-1", "4187-13"]
+    import re as _re
+    preview_rows = []
+    for ex in example_codes:
+        if dc_mode == "auto":
+            m = _re.match(r"^(.+)-(\d{1,3})$", ex)
+            result = m.group(1) if m else ex
+        else:
+            result = ex[:drawing_code_length]
+        preview_rows.append(f"`{ex}` → `{result}`")
+    st.markdown("  \n".join(preview_rows))
+
 # ── STEP 3: Run ──────────────────────────────────────────────
 st.markdown('<div class="section-header">Step 3 — Run</div>', unsafe_allow_html=True)
 
@@ -837,7 +891,7 @@ if run_clicked and run_ready:
             combined_bytes, summary, descriptions, bom_warnings = create_combined_workbook_bytes(bom_bytes)
 
             # Production Schedule
-            schedule_bytes = create_production_schedule_bytes(log_bytes, selected_sheets, summary, descriptions, logo_bytes=logo_bytes)
+            schedule_bytes = create_production_schedule_bytes(log_bytes, selected_sheets, summary, descriptions, logo_bytes=logo_bytes, drawing_code_mode=dc_mode, drawing_code_length=drawing_code_length)
 
             # ZIP both
             zip_buf = io.BytesIO()
