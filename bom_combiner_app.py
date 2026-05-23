@@ -58,6 +58,16 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
 .stat-card { background: #F8F9FC; border: 1px solid #DDE1EA; border-radius: 8px; padding: 12px 20px; text-align: center; }
 .stat-num  { font-size: 24px; font-weight: 700; color: #185FA5; }
 .stat-label{ font-size: 11px; color: #8E96A8; margin-top: 2px; }
+.help-btn {
+    position: fixed; bottom: 24px; left: 24px; z-index: 999;
+    background: #185FA5; color: white !important;
+    width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; text-decoration: none !important;
+    box-shadow: 0 4px 16px rgba(24,95,165,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.help-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(24,95,165,0.5); }
 .footer-bar{ text-align: center; font-size: 12px; color: #888; margin-top: 40px; padding-top: 20px; border-top: 1px solid #EFF1F5; }
 </style>
 """, unsafe_allow_html=True)

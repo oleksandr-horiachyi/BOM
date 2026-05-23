@@ -148,7 +148,7 @@ html, body, [class*="css"] {
 
 /* Footer */
 .help-btn {
-    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    position: fixed; bottom: 24px; left: 24px; z-index: 999;
     background: #185FA5; color: white !important;
     width: 46px; height: 46px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
