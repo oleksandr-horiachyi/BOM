@@ -671,13 +671,47 @@
 
     <!-- WORKFLOW -->
     <h2 id="workflow">Typical workflow</h2>
-    <p>Here is the most common end-to-end workflow, from receiving design files to having a Production Schedule ready for the workshop:</p>
+    <p>Choose the workflow that matches your situation:</p>
+
+    <!-- WORKFLOW 1 -->
+    <h3>Workflow 1 — You already have a complete BOM</h3>
+    <p>You have one BOM file that contains all assemblies with the correct quantities already set in cell E2 of each sheet.</p>
+
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📗</div>
+        <div class="workflow-step-name">BOM file</div>
+        <div class="workflow-step-sub">All assemblies + qty</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📘</div>
+        <div class="workflow-step-name">LOG file</div>
+        <div class="workflow-step-sub">Drawing codes</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step highlight">
+        <div class="workflow-step-icon">⚙️</div>
+        <div class="workflow-step-name">Tool 1</div>
+        <div class="workflow-step-sub">BOM Automation</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📥</div>
+        <div class="workflow-step-name">Download reports</div>
+        <div class="workflow-step-sub">Ready for workshop</div>
+      </div>
+    </div>
+
+    <!-- WORKFLOW 2 -->
+    <h3>Workflow 2 — You have separate BOM per assembly, need to set quantities</h3>
+    <p>You have individual BOM files for each assembly type, but you need to collect them, review and set how many of each assembly are needed, before generating the schedule.</p>
 
     <div class="workflow">
       <div class="workflow-step">
         <div class="workflow-step-icon">📁</div>
-        <div class="workflow-step-name">Receive BOM files</div>
-        <div class="workflow-step-sub">From designers</div>
+        <div class="workflow-step-name">BOM files</div>
+        <div class="workflow-step-sub">One per assembly</div>
       </div>
       <div class="workflow-arrow">→</div>
       <div class="workflow-step highlight">
@@ -689,7 +723,37 @@
       <div class="workflow-step highlight">
         <div class="workflow-step-icon">⚙️</div>
         <div class="workflow-step-name">Tool 1</div>
-        <div class="workflow-step-sub">Generate schedule</div>
+        <div class="workflow-step-sub">BOM Automation</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="workflow-step-icon">📥</div>
+        <div class="workflow-step-name">Download reports</div>
+        <div class="workflow-step-sub">Ready for workshop</div>
+      </div>
+    </div>
+
+    <!-- WORKFLOW 3 -->
+    <h3>Workflow 3 — Multiple designers, each responsible for a part type</h3>
+    <p>The work is split between designers — one handles profiles, another handles brackets, a third handles panels, etc. Each produces their own BOM. You need to merge all their BOMs into one before generating the schedule.</p>
+
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-step-icon">👥</div>
+        <div class="workflow-step-name">BOM files</div>
+        <div class="workflow-step-sub">From each designer</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step highlight">
+        <div class="workflow-step-icon">🔀</div>
+        <div class="workflow-step-name">Tool 2</div>
+        <div class="workflow-step-sub">Merge all BOMs</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step highlight">
+        <div class="workflow-step-icon">⚙️</div>
+        <div class="workflow-step-name">Tool 1</div>
+        <div class="workflow-step-sub">BOM Automation</div>
       </div>
       <div class="workflow-arrow">→</div>
       <div class="workflow-step">
@@ -700,10 +764,10 @@
     </div>
 
     <div class="callout tip">
-      <div class="callout-icon">🔀</div>
+      <div class="callout-icon">💡</div>
       <div class="callout-body">
-        <strong>When to use Tool 2 (Merge)</strong>
-        If you receive updated BOM files during production and need to add new parts or updated quantities to an existing BOM, use Tool 2 to merge the update into your master file. The Merge Report will show exactly what changed.
+        <strong>Tool 2 can also be used for updates</strong>
+        If you receive a revised BOM from a designer during production — with new parts or updated quantities — use Tool 2 to merge the update into your existing master BOM. The Merge Report logs exactly what changed.
       </div>
     </div>
 
