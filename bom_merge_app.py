@@ -91,15 +91,15 @@ html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
 .stat-num { font-size: 28px; font-weight: 700; color: #185FA5; }
 .stat-label { font-size: 12px; color: #8E96A8; margin-top: 2px; }
 .help-btn {
-    position: fixed; bottom: 24px; left: 24px; z-index: 999;
+    display: inline-flex; align-items: center; gap: 8px;
     background: #185FA5; color: white !important;
-    width: 46px; height: 46px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; text-decoration: none !important;
-    box-shadow: 0 4px 16px rgba(24,95,165,0.35);
+    padding: 8px 18px; border-radius: 20px;
+    font-size: 14px; font-weight: 600; text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(24,95,165,0.25);
     transition: transform 0.15s, box-shadow 0.15s;
 }
-.help-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(24,95,165,0.5); }
+.help-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(24,95,165,0.4); }
+.help-btn-wrap { text-align: center; margin: 24px 0 8px; }
 
 .footer-bar {
     text-align: center; font-size: 12px; color: #888;
@@ -611,7 +611,7 @@ with st.expander("🎨 Color coding guide"):
         )
 
 # Footer
-st.markdown('''<a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool2" target="_blank" class="help-btn" title="Help &amp; Documentation">❓</a>''', unsafe_allow_html=True)
+st.markdown('''<div class="help-btn-wrap"><a href="https://oleksandr-horiachyi.github.io/BOM/help.html#tool2" target="_blank" class="help-btn">❓ Help &amp; Docs</a></div>''', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="footer-bar">
